@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="bg-[#F5F5F7] min-h-screen">
+    <div class="bg-[#FAF9F6] min-h-screen">
         <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-8">
 
             {{-- Header + 小标题 --}}
@@ -97,91 +97,86 @@
             @if ($products->count())
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
                     @foreach ($products as $product)
-                        <a href="{{ route('shop.show', $product->slug) }}"
-                            class="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-[#D4AF37]/60 transition overflow-hidden flex flex-col">
+                        <div
+                            class="group relative flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#D4AF37]/40 transition-all duration-500 overflow-hidden">
 
-                            {{-- Product image：跟 home 一样 aspect-[4/3] --}}
-                            <div class="relative aspect-square bg-gray-100 overflow-hidden">
-                                @if ($product->image ?? false)
+                            {{-- Image Wrapper --}}
+                            <a href="{{ route('shop.show', $product->slug) }}"
+                                class="relative aspect-square overflow-hidden bg-gray-50">
+                                @if ($product->image)
                                     <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
-                                        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                        loading="lazy"
+                                        class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
                                 @else
-                                    <div class="w-full h-full flex items-center justify-center text-xs text-gray-400">
-                                        Image coming soon
+                                    <div
+                                        class="w-full h-full flex items-center justify-center bg-gray-50 text-[10px] uppercase tracking-widest text-gray-400">
+                                        No Image Available
                                     </div>
                                 @endif
 
-                                {{-- ❤️ Favorite button --}}
-                                @auth
-                                    @php
-                                        $isFavorited = auth()->user()->favorites->contains('product_id', $product->id);
-                                    @endphp
-
-                                    <form
-                                        action="{{ $isFavorited ? route('account.favorites.destroy', $product) : route('account.favorites.store', $product) }}"
-                                        method="POST" class="absolute top-2 right-2 z-10">
-                                        @csrf
-                                        @if ($isFavorited)
-                                            @method('DELETE')
-                                        @endif
-
-                                        <button type="submit"
-                                            class="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur
-                    hover:bg-white text-[#8f6a10] shadow-sm transition">
-
-                                            {{-- If favorited show solid heart --}}
-                                            @if ($isFavorited)
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="#D4AF37" viewBox="0 0 24 24"
-                                                    class="h-5 w-5">
-                                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42
-                                            4.42 3 7.5 3c1.74 0 3.41.81 4.5
-                                            2.09C13.09 3.81 14.76 3 16.5
-                                            3 19.58 3 22 5.42 22 8.5c0
-                                            3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                                                </svg>
-                                            @else
-                                                {{-- empty heart --}}
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#8f6a10"
-                                                    stroke-width="1.8" viewBox="0 0 24 24" class="h-5 w-5">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.5c0-2.8-2.2-5-5-5-1.9
-                                            0-3.6 1-4.5 2.5C10.6 4.5 8.9 3.5
-                                            7 3.5 4.2 3.5 2 5.7 2 8.5c0 5.2
-                                            5.5 8.9 9.8 12.7.1.1.3.1.4
-                                            0C15.5 17.4 21 13.7 21 8.5z" />
-                                                </svg>
-                                            @endif
-                                        </button>
-                                    </form>
-                                @endauth
-
+                                {{-- Subtle Overlay --}}
                                 <div
-                                    class="absolute inset-0 bg-gradient-to-t from-black/30 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition">
+                                    class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500">
                                 </div>
-                            </div>
+                            </a>
 
-                            {{-- Content：跟 home 统一 --}}
-                            <div class="flex-1 flex flex-col px-3.5 py-3">
-                                <p class="text-xs uppercase tracking-[0.18em] text-gray-400 mb-1">
-                                    {{ $product->category->name ?? 'Product' }}
-                                </p>
+                            {{-- ❤️ Favorite Button --}}
+                            @auth
+                                @php
+                                    $isFavorited = auth()->user()->favorites->contains('product_id', $product->id);
+                                @endphp
+                                <form
+                                    action="{{ $isFavorited ? route('account.favorites.destroy', $product) : route('account.favorites.store', $product) }}"
+                                    method="POST" class="absolute top-3 right-3 z-10" onclick="event.stopPropagation();">
+                                    @csrf
+                                    @if ($isFavorited)
+                                        @method('DELETE')
+                                    @endif
 
-                                <h3 class="text-sm font-semibold text-gray-900 line-clamp-2">
-                                    {{ $product->name }}
-                                </h3>
+                                    <button type="submit"
+                                        onclick="event.preventDefault(); event.stopPropagation(); this.closest('form').submit();"
+                                        class="w-9 h-9 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-[#8f6a10] shadow-sm hover:bg-white hover:scale-110 transition-all active:scale-95">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            fill="{{ $isFavorited ? '#D4AF37' : 'none' }}"
+                                            stroke="{{ $isFavorited ? '#D4AF37' : 'currentColor' }}" stroke-width="1.8"
+                                            viewBox="0 0 24 24" class="h-5 w-5">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                        </svg>
+                                    </button>
+                                </form>
+                            @endauth
 
-                                <div class="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                    <p class="text-sm font-semibold text-[#8f6a10]">
+                            {{-- Product Content --}}
+                            <div class="flex-1 flex flex-col p-4">
+                                <a href="{{ route('shop.show', $product->slug) }}" class="block flex-1 group/title">
+                                    <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5">
+                                        {{ $product->category->name ?? 'General' }}
+                                    </p>
+
+                                    <h3
+                                        class="text-sm font-semibold text-gray-900 line-clamp-2 group-hover/title:text-[#8f6a10] transition-colors leading-snug">
+                                        {{ $product->name }}
+                                    </h3>
+                                </a>
+
+                                <div class="mt-4 flex flex-col gap-3">
+                                    {{-- Price Logic --}}
+                                    <p class="text-base font-bold text-gray-900">
                                         @if ($product->has_variants && $product->variants->count())
                                             @php
-                                                $variantPrices = $product->variants->whereNotNull('price');
-                                                $min = $variantPrices->min('price');
-                                                $max = $variantPrices->max('price');
+                                                $prices = $product->variants->pluck('price')->filter();
+                                                $min = $prices->min();
+                                                $max = $prices->max();
                                             @endphp
 
                                             @if ($min == $max)
                                                 RM {{ number_format($min, 2) }}
                                             @else
-                                                <span class="text-xs font-normal text-gray-400 mr-1">From</span>
+                                                <span
+                                                    class="text-[10px] font-medium text-gray-400 uppercase align-middle mr-1">
+                                                    From
+                                                </span>
                                                 RM {{ number_format($min, 2) }}
                                             @endif
                                         @else
@@ -189,16 +184,14 @@
                                         @endif
                                     </p>
 
-                                    <span
-                                        class="inline-flex items-center justify-center rounded-full border border-gray-200 px-3 py-1.5 text-[11px] font-medium text-gray-700
-                                                w-full sm:w-auto
-                                                group-hover:border-[#D4AF37]/70 group-hover:text-[#8f6a10] transition">
-                                        View details
-                                    </span>
+                                    {{-- Action Button --}}
+                                    <a href="{{ route('shop.show', $product->slug) }}"
+                                        class="w-full inline-flex items-center justify-center rounded-xl bg-gray-50 border border-gray-200 py-2.5 text-xs font-bold text-gray-700 hover:bg-[#D4AF37] hover:text-white hover:border-[#D4AF37] transition-all duration-300">
+                                        View Details
+                                    </a>
                                 </div>
-
                             </div>
-                        </a>
+                        </div>
                     @endforeach
                 </div>
 
@@ -206,19 +199,24 @@
                     {{ $products->withQueryString()->links() }}
                 </div>
             @else
+                {{-- Empty State (match featured style) --}}
                 <div
-                    class="mt-8 flex flex-col items-center justify-center border border-dashed border-gray-300 rounded-2xl bg-white py-10">
-                    <p class="text-sm text-gray-500">
+                    class="mt-8 flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-3xl bg-white/50 py-16 px-4">
+                    <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                        <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                        </svg>
+                    </div>
+                    <p class="text-gray-500 font-medium text-center">
                         No products found. Try adjusting your filters.
                     </p>
                     <a href="{{ route('shop.index') }}"
-                        class="mt-3 inline-flex items-center px-4 py-2 rounded-full text-xs font-medium bg-gray-900 text-white hover:bg-black">
+                        class="mt-4 text-sm font-bold text-[#8f6a10] underline underline-offset-4">
                         Back to shop
                     </a>
                 </div>
             @endif
-
-
         </div>
     </div>
 </x-app-layout>

@@ -1,8 +1,8 @@
 <x-app-layout>
     <div class="bg-white">
         {{-- Banner：可滑动轮播，图片来自数据库 --}}
-        <section class="w-full relative z-0 bg-white" data-banner-slider>
-            <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 pt-5">
+        <section class="w-full relative z-0 bg-[#FAF9F6]" data-banner-slider>
+            <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10 pt-5">
                 <div class="relative rounded-3xl overflow-hidden shadow-[0_18px_40px_rgba(0,0,0,0.25)]">
 
                     @if (isset($banners) && $banners->count())
@@ -66,7 +66,7 @@
 
 
         {{-- Category 区块 --}}
-        <section id="categories" class="bg-white">
+        <section id="categories" class="bg-[#FAF9F6]">
             <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-10">
                 {{-- <div class="flex items-center justify-between mb-4 sm:mb-6">
                     <div>
@@ -85,27 +85,31 @@
                         <div class="flex gap-4 md:gap-5 min-w-max py-1">
                             @foreach ($categories as $category)
                                 <a href="{{ route('shop.index', ['category' => $category->slug]) }}"
-                                    class="group shrink-0 w-[110px] md:w-[120px] bg-white border border-gray-100 rounded-xl 
-                                  px-3 py-4 shadow-sm hover:shadow-md hover:border-[#D4AF37]/70 transition flex flex-col items-center">
+                                    class="group shrink-0 w-[130px] md:w-[150px]
+                                            rounded-2xl overflow-hidden
+                                            bg-white border border-gray-100
+                                            shadow-sm hover:shadow-md
+                                            hover:border-[#D4AF37]/60 transition">
 
-                                    {{-- icon --}}
-                                    <div
-                                        class="w-14 h-14 rounded-full bg-gray-50 flex items-center justify-center overflow-hidden mb-2">
+                                    {{-- 图片区域：直接吃满，没有灰色 --}}
+                                    <div class="aspect-square relative bg-white">
                                         @if ($category->icon)
                                             <img src="{{ asset('storage/' . $category->icon) }}"
                                                 alt="{{ $category->name }}"
-                                                class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200">
+                                                class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                                         @else
-                                            <span class="text-[10px] text-gray-400 text-center">
+                                            <div
+                                                class="absolute inset-0 flex items-center justify-center text-xs text-gray-400">
                                                 No image
-                                            </span>
+                                            </div>
                                         @endif
                                     </div>
 
-                                    {{-- name --}}
-                                    <div
-                                        class="text-[11px] sm:text-xs font-medium text-gray-800 text-center leading-snug line-clamp-2">
-                                        {{ $category->name }}
+                                    {{-- 底部白色标题区 --}}
+                                    <div class="px-3 py-2 border-t border-gray-100 bg-white">
+                                        <div class="text-sm font-semibold text-gray-900 text-center line-clamp-2">
+                                            {{ $category->name }}
+                                        </div>
                                     </div>
                                 </a>
                             @endforeach
@@ -124,241 +128,325 @@
         </section>
 
 
-        {{-- Featured products --}}
-        <section id="featured" class="bg-gray-50">
-            <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-14">
-                <div class="flex items-center justify-between mb-6">
-                    <div>
-                        <h2 class="text-xl sm:text-2xl font-semibold text-gray-900">
-                            Featured products
+        {{-- New Arrivals products --}}
+        <section id="featured" class="bg-[#FAF9F6]">
+            <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-10 lg:py-16">
+
+                {{-- Header Section --}}
+                <div class="flex items-end justify-between mb-8">
+                    <div class="space-y-1">
+                        <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">
+                            New Arrivals
                         </h2>
-                        <p class="mt-1 text-sm text-gray-500">
-                            A quick look at selected items from Shop.
+                        <p class="text-sm text-gray-500 max-w-md">
+                            Hand-picked treasures and our latest additions to the collection.
                         </p>
                     </div>
 
                     <a href="{{ route('shop.index') }}"
-                        class="hidden sm:inline-flex items-center text-sm font-medium text-[#8f6a10] hover:text-[#D4AF37]">
+                        class="hidden sm:inline-flex items-center text-sm font-semibold text-[#8f6a10] hover:text-[#D4AF37] transition-colors group">
                         Browse all products
-                        <svg xmlns="http://www.w3.org/2000/svg" class="ml-1.5 h-4 w-4" fill="none"
-                            viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <svg xmlns="http://www.w3.org/2000/svg"
+                            class="ml-1.5 h-4 w-4 transform group-hover:translate-x-1 transition-transform"
+                            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12l-7.5 7.5M21 12H3" />
                         </svg>
                     </a>
                 </div>
 
                 @if ($featured->count())
-                    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 sm:gap-6">
+                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 sm:gap-6">
                         @foreach ($featured as $product)
-                            <a href="{{ route('shop.show', $product->slug) }}"
-                                class="group relative bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-[#D4AF37]/60 transition overflow-hidden flex flex-col">
-                                {{-- Product image --}}
-                                <div class="relative aspect-square bg-gray-100 overflow-hidden">
-                                    @if ($product->image ?? false)
+                            <div
+                                class="group relative flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl hover:border-[#D4AF37]/40 transition-all duration-500 overflow-hidden">
+
+                                {{-- Image Wrapper --}}
+                                <a href="{{ route('shop.show', $product->slug) }}"
+                                    class="relative aspect-square overflow-hidden bg-gray-50">
+                                    @if ($product->image)
                                         <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}"
-                                            class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                                            class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700 ease-out">
                                     @else
                                         <div
-                                            class="w-full h-full flex items-center justify-center text-xs text-gray-400">
-                                            Image coming soon
+                                            class="w-full h-full flex items-center justify-center bg-gray-50 text-[10px] uppercase tracking-widest text-gray-400">
+                                            No Image Available
                                         </div>
                                     @endif
 
-                                    {{-- ❤️ Favorite button --}}
-                                    @auth
-                                        @php
-                                            $isFavorited = auth()
-                                                ->user()
-                                                ->favorites->contains('product_id', $product->id);
-                                        @endphp
-
-                                        <form
-                                            action="{{ $isFavorited ? route('account.favorites.destroy', $product) : route('account.favorites.store', $product) }}"
-                                            method="POST" class="absolute top-2 right-2 z-10">
-                                            @csrf
-                                            @if ($isFavorited)
-                                                @method('DELETE')
-                                            @endif
-
-                                            <button type="submit"
-                                                class="w-8 h-8 flex items-center justify-center rounded-full bg-white/80 backdrop-blur
-                    hover:bg-white text-[#8f6a10] shadow-sm transition">
-
-                                                {{-- If favorited show solid heart --}}
-                                                @if ($isFavorited)
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="#D4AF37"
-                                                        viewBox="0 0 24 24" class="h-5 w-5">
-                                                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42
-                                                                4.42 3 7.5 3c1.74 0 3.41.81 4.5
-                                                                2.09C13.09 3.81 14.76 3 16.5
-                                                                3 19.58 3 22 5.42 22 8.5c0
-                                                                3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                                                    </svg>
-                                                @else
-                                                    {{-- empty heart --}}
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#8f6a10"
-                                                        stroke-width="1.8" viewBox="0 0 24 24" class="h-5 w-5">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.5c0-2.8-2.2-5-5-5-1.9
-                                                                0-3.6 1-4.5 2.5C10.6 4.5 8.9 3.5
-                                                                7 3.5 4.2 3.5 2 5.7 2 8.5c0 5.2
-                                                                5.5 8.9 9.8 12.7.1.1.3.1.4
-                                                                0C15.5 17.4 21 13.7 21 8.5z" />
-                                                    </svg>
-                                                @endif
-                                            </button>
-                                        </form>
-                                    @endauth
-
+                                    {{-- Subtle Overlay --}}
                                     <div
-                                        class="absolute inset-0 bg-gradient-to-t from-black/30 via-black/0 to-transparent opacity-0 group-hover:opacity-100 transition">
+                                        class="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500">
                                     </div>
-                                </div>
+                                </a>
 
-                                {{-- Content --}}
-                                <div class="flex-1 flex flex-col px-3.5 py-3">
-                                    <p class="text-xs uppercase tracking-[0.18em] text-gray-400 mb-1">
-                                        {{ $product->category->name ?? 'Product' }}
-                                    </p>
-                                    <h3 class="text-sm font-semibold text-gray-900 line-clamp-2">
-                                        {{ $product->name }}
-                                    </h3>
+                                {{-- ❤️ Favorite Button (Logic remains same, styling updated) --}}
+                                @auth
+                                    @php
+                                        $isFavorited = auth()->user()->favorites->contains('product_id', $product->id);
+                                    @endphp
+                                    <form
+                                        action="{{ $isFavorited ? route('account.favorites.destroy', $product) : route('account.favorites.store', $product) }}"
+                                        method="POST" class="absolute top-3 right-3 z-10">
+                                        @csrf
+                                        @if ($isFavorited)
+                                            @method('DELETE')
+                                        @endif
+                                        <button type="submit"
+                                            class="w-9 h-9 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-sm text-[#8f6a10] shadow-sm hover:bg-white hover:scale-110 transition-all active:scale-95">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                fill="{{ $isFavorited ? '#D4AF37' : 'none' }}"
+                                                stroke="{{ $isFavorited ? '#D4AF37' : 'currentColor' }}" stroke-width="1.8"
+                                                viewBox="0 0 24 24" class="h-5 w-5">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                            </svg>
+                                        </button>
+                                    </form>
+                                @endauth
 
-                                    <div
-                                        class="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                        <p class="text-sm font-semibold text-[#8f6a10]">
+                                {{-- Product Content --}}
+                                <div class="flex-1 flex flex-col p-4">
+                                    <a href="{{ route('shop.show', $product->slug) }}"
+                                        class="block flex-1 group/title">
+                                        <p
+                                            class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#D4AF37] mb-1.5">
+                                            {{ $product->category->name ?? 'General' }}
+                                        </p>
+                                        <h3
+                                            class="text-sm font-semibold text-gray-900 line-clamp-2 group-hover/title:text-[#8f6a10] transition-colors leading-snug">
+                                            {{ $product->name }}
+                                        </h3>
+                                    </a>
+
+                                    <div class="mt-4 flex flex-col gap-3">
+                                        {{-- Price Logic --}}
+                                        <p class="text-base font-bold text-gray-900">
                                             @if ($product->has_variants && $product->variants->count())
                                                 @php
-                                                    $variantPrices = $product->variants->whereNotNull('price');
-                                                    $min = $variantPrices->min('price');
-                                                    $max = $variantPrices->max('price');
+                                                    $prices = $product->variants->pluck('price')->filter();
+                                                    $min = $prices->min();
+                                                    $max = $prices->max();
                                                 @endphp
-
                                                 @if ($min == $max)
                                                     RM {{ number_format($min, 2) }}
                                                 @else
-                                                    <span class="text-xs font-normal text-gray-400 mr-1">From</span>
-                                                    RM {{ number_format($min, 2) }}
+                                                    <span
+                                                        class="text-[10px] font-medium text-gray-400 uppercase align-middle mr-1">From</span>RM
+                                                    {{ number_format($min, 2) }}
                                                 @endif
                                             @else
                                                 RM {{ number_format($product->price ?? 0, 2) }}
                                             @endif
                                         </p>
 
-                                        <span
-                                            class="inline-flex items-center justify-center rounded-full border border-gray-200 px-3 py-1.5 text-[11px] font-medium text-gray-700
-                                                    w-full sm:w-auto
-                                                    group-hover:border-[#D4AF37]/70 group-hover:text-[#8f6a10] transition">
-                                            View details
-                                        </span>
+                                        {{-- Action Button --}}
+                                        <a href="{{ route('shop.show', $product->slug) }}"
+                                            class="w-full inline-flex items-center justify-center rounded-xl bg-gray-50 border border-gray-200 py-2.5 text-xs font-bold text-gray-700 hover:bg-[#D4AF37] hover:text-white hover:border-[#D4AF37] transition-all duration-300">
+                                            View Details
+                                        </a>
                                     </div>
-
                                 </div>
-                            </a>
+                            </div>
                         @endforeach
                     </div>
                 @else
+                    {{-- Enhanced Empty State --}}
                     <div
-                        class="flex flex-col items-center justify-center border border-dashed border-gray-300 rounded-2xl bg-white py-10">
-                        <p class="text-sm text-gray-500">
-                            No products yet. Add products in your admin panel to show them here.
+                        class="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-3xl bg-white/50 py-16 px-4">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                            <svg class="w-8 h-8 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                    d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                        </div>
+                        <p class="text-gray-500 font-medium text-center">Our newest treasures are still being polished.
                         </p>
                         <a href="{{ route('shop.index') }}"
-                            class="mt-3 inline-flex items-center px-4 py-2 rounded-full text-xs font-medium bg-gray-900 text-white hover:bg-black">
-                            Go to shop page
-                        </a>
+                            class="mt-4 text-sm font-bold text-[#8f6a10] underline underline-offset-4">Check back
+                            soon</a>
                     </div>
                 @endif
             </div>
         </section>
 
         {{-- Trust & Value Section --}}
-        <section class="bg-white border-t border-gray-100">
-            <div class="max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-y-10 gap-x-6">
+        <section class="relative overflow-hidden bg-[#F5F0E8] border-y border-black/10">
+            {{-- Decorative glows (premium, subtle) --}}
+            <div class="absolute inset-0 pointer-events-none">
+                <div class="absolute -top-32 -left-40 w-[520px] h-[520px] rounded-full bg-[#D4AF37]/15 blur-3xl"></div>
+                <div class="absolute -bottom-40 -right-40 w-[620px] h-[620px] rounded-full bg-black/5 blur-3xl"></div>
+                <div
+                    class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-black/10 to-transparent">
+                </div>
+                <div
+                    class="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-black/10 to-transparent">
+                </div>
+            </div>
 
-                    {{-- Delivery --}}
-                    <div class="flex flex-col items-center text-center md:items-start md:text-left gap-4 group">
-                        <div
-                            class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-2xl bg-[#D4AF37]/5 text-[#8f6a10] group-hover:bg-[#D4AF37] group-hover:text-white transition-all duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.129-1.125V11.25c0-4.446-3.51-8.11-8.048-8.11h-.852a4.482 4.482 0 00-4.488 4.488v2.602M19.5 14.25l-2.25-6.75m-10.5 6.75h12.75" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-gray-900 tracking-tight uppercase mb-1">
-                                Fast Delivery
-                            </h4>
-                            <p class="text-sm text-gray-500 leading-relaxed">
-                                Processed and shipped within <span class="font-medium text-gray-700">1–3 working
-                                    days</span>.
-                            </p>
+            <div class="relative max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+
+                {{-- Section heading (adds hierarchy so it feels designed, not just 4 blocks) --}}
+                <div class="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8 lg:mb-10">
+                    <div>
+                        <h3 class="mt-2 text-2xl lg:text-3xl font-black tracking-tight text-black">
+                            Built for confidence, every order
+                        </h3>
+                    </div>
+
+                </div>
+
+                {{-- Cards --}}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+
+                    {{-- Card 1 --}}
+                    <div
+                        class="group rounded-3xl bg-white/55 backdrop-blur-sm border border-black/5 p-6
+                       hover:bg-white/70 hover:border-black/10 hover:-translate-y-0.5
+                       transition-all duration-300">
+                        <div class="flex items-start gap-4">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center
+                               bg-[#D4AF37]/15 text-[#8f6a10]
+                               group-hover:bg-[#D4AF37] group-hover:text-black
+                               transition-all duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.129-1.125V11.25c0-4.446-3.51-8.11-8.048-8.11h-.852a4.482 4.482 0 00-4.488 4.488v2.602M19.5 14.25l-2.25-6.75m-10.5 6.75h12.75" />
+                                </svg>
+                            </div>
+
+                            <div class="min-w-0">
+                                <h4 class="text-sm font-extrabold text-black tracking-tight">
+                                    Fast Delivery
+                                </h4>
+                                <p class="mt-1 text-sm text-black/60 leading-relaxed">
+                                    Shipped within <span class="font-semibold text-black/80">1–3 working days</span>.
+                                </p>
+
+                                <div class="mt-4">
+                                    <span
+                                        class="inline-flex items-center gap-2 text-[11px] font-bold text-[#8f6a10]
+                                       bg-[#D4AF37]/10 border border-[#D4AF37]/25 px-3 py-1 rounded-full">
+                                        Dispatch guarantee
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {{-- Payment --}}
-                    <div class="flex flex-col items-center text-center md:items-start md:text-left gap-4 group">
-                        <div
-                            class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-2xl bg-[#D4AF37]/5 text-[#8f6a10] group-hover:bg-[#D4AF37] group-hover:text-white transition-all duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.744c0 5.052 3.823 9.213 8.712 9.637.222.019.447.029.672.029.224 0 .449-.01.671-.029 4.89-.423 8.713-4.585 8.713-9.637 0-1.305-.209-2.56-.598-3.744A11.959 11.959 0 0112 2.714z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-gray-900 tracking-tight uppercase mb-1">
-                                Secure Checkout
-                            </h4>
-                            <p class="text-sm text-gray-500 leading-relaxed">
-                                Your transactions are protected by <span
-                                    class="font-medium text-gray-700">industry-standard encryption</span>.
-                            </p>
+                    {{-- Card 2 --}}
+                    <div
+                        class="group rounded-3xl bg-white/55 backdrop-blur-sm border border-black/5 p-6
+                       hover:bg-white/70 hover:border-black/10 hover:-translate-y-0.5
+                       transition-all duration-300">
+                        <div class="flex items-start gap-4">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center
+                               bg-[#D4AF37]/15 text-[#8f6a10]
+                               group-hover:bg-[#D4AF37] group-hover:text-black
+                               transition-all duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.744c0 5.052 3.823 9.213 8.712 9.637.222.019.447.029.672.029.224 0 .449-.01.671-.029 4.89-.423 8.713-4.585 8.713-9.637 0-1.305-.209-2.56-.598-3.744A11.959 11.959 0 0112 2.714z" />
+                                </svg>
+                            </div>
+
+                            <div class="min-w-0">
+                                <h4 class="text-sm font-extrabold text-black tracking-tight">
+                                    Secure Checkout
+                                </h4>
+                                <p class="mt-1 text-sm text-black/60 leading-relaxed">
+                                    Protected by <span class="font-semibold text-black/80">secure encryption</span>.
+                                </p>
+
+                                <div class="mt-4">
+                                    <span
+                                        class="inline-flex items-center gap-2 text-[11px] font-bold text-[#8f6a10]
+                                       bg-[#D4AF37]/10 border border-[#D4AF37]/25 px-3 py-1 rounded-full">
+                                        Trusted payment
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {{-- Returns --}}
-                    <div class="flex flex-col items-center text-center md:items-start md:text-left gap-4 group">
-                        <div
-                            class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-2xl bg-[#D4AF37]/5 text-[#8f6a10] group-hover:bg-[#D4AF37] group-hover:text-white transition-all duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-gray-900 tracking-tight uppercase mb-1">
-                                Easy Returns
-                            </h4>
-                            <p class="text-sm text-gray-500 leading-relaxed">
-                                Not satisfied? Enjoy <span class="font-medium text-gray-700">hassle-free returns</span>
-                                on eligible items.
-                            </p>
+                    {{-- Card 3 --}}
+                    <div
+                        class="group rounded-3xl bg-white/55 backdrop-blur-sm border border-black/5 p-6
+                       hover:bg-white/70 hover:border-black/10 hover:-translate-y-0.5
+                       transition-all duration-300">
+                        <div class="flex items-start gap-4">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center
+                               bg-[#D4AF37]/15 text-[#8f6a10]
+                               group-hover:bg-[#D4AF37] group-hover:text-black
+                               transition-all duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3" />
+                                </svg>
+                            </div>
+
+                            <div class="min-w-0">
+                                <h4 class="text-sm font-extrabold text-black tracking-tight">
+                                    Easy Returns
+                                </h4>
+                                <p class="mt-1 text-sm text-black/60 leading-relaxed">
+                                    Hassle-free returns on <span class="font-semibold text-black/80">eligible
+                                        items</span>.
+                                </p>
+
+                                <div class="mt-4">
+                                    <span
+                                        class="inline-flex items-center gap-2 text-[11px] font-bold text-[#8f6a10]
+                                       bg-[#D4AF37]/10 border border-[#D4AF37]/25 px-3 py-1 rounded-full">
+                                        Simple process
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    {{-- Local --}}
-                    <div class="flex flex-col items-center text-center md:items-start md:text-left gap-4 group">
-                        <div
-                            class="flex-shrink-0 w-12 h-12 flex items-center justify-center rounded-2xl bg-[#D4AF37]/5 text-[#8f6a10] group-hover:bg-[#D4AF37] group-hover:text-white transition-all duration-300">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="text-sm font-bold text-gray-900 tracking-tight uppercase mb-1">
-                                Malaysian Seller
-                            </h4>
-                            <p class="text-sm text-gray-500 leading-relaxed">
-                                Supporting the <span class="font-medium text-gray-700">local community</span> with
-                                pride and quality.
-                            </p>
+                    {{-- Card 4 --}}
+                    <div
+                        class="group rounded-3xl bg-white/55 backdrop-blur-sm border border-black/5 p-6
+                       hover:bg-white/70 hover:border-black/10 hover:-translate-y-0.5
+                       transition-all duration-300">
+                        <div class="flex items-start gap-4">
+                            <div
+                                class="flex-shrink-0 w-12 h-12 rounded-2xl flex items-center justify-center
+                               bg-[#D4AF37]/15 text-[#8f6a10]
+                               group-hover:bg-[#D4AF37] group-hover:text-black
+                               transition-all duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+                                </svg>
+                            </div>
+
+                            <div class="min-w-0">
+                                <h4 class="text-sm font-extrabold text-black tracking-tight">
+                                    Malaysian Seller
+                                </h4>
+                                <p class="mt-1 text-sm text-black/60 leading-relaxed">
+                                    Proudly supporting <span class="font-semibold text-black/80">local
+                                        community</span>.
+                                </p>
+
+                                <div class="mt-4">
+                                    <span
+                                        class="inline-flex items-center gap-2 text-[11px] font-bold text-[#8f6a10]
+                                       bg-[#D4AF37]/10 border border-[#D4AF37]/25 px-3 py-1 rounded-full">
+                                        Local & reliable
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -366,41 +454,62 @@
             </div>
         </section>
 
+
+
         {{-- Bottom CTA Section --}}
-        <section class="relative bg-white border-t border-gray-100 overflow-hidden">
-            {{-- Subtle decorative element --}}
+        <section class="relative bg-[#FAF9F6] border-t border-black/5 overflow-hidden antialiased">
+            {{-- Decorative Elements --}}
             <div
-                class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-64 h-64 bg-[#D4AF37]/5 rounded-full blur-3xl">
+                class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-[#D4AF37]/10 rounded-full blur-[100px]">
+            </div>
+            <div
+                class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-72 h-72 bg-[#D4AF37]/5 rounded-full blur-[80px]">
             </div>
 
-            <div class="relative max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
+            <div class="relative max-w-7xl5 mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
                 <div
-                    class="flex flex-col md:flex-row items-center justify-between gap-8 bg-gray-50/50 rounded-3xl p-8 md:p-12 border border-gray-100">
+                    class="flex flex-col lg:flex-row items-center justify-between gap-10
+                    bg-white/40 backdrop-blur-md
+                    rounded-[2.5rem] p-10 md:p-16
+                    border border-white/20 shadow-sm
+                    hover:border-black/10 transition-colors duration-500">
 
-                    <div class="text-center md:text-left max-w-xl">
-                        <h3 class="text-xl md:text-2xl font-bold text-gray-900 tracking-tight">
-                            Ready to elevate your lifestyle?
+                    <div class="text-center lg:text-left max-w-2xl">
+                        <h3 class="text-2xl md:text-3xl lg:text-3xl font-bold text-black tracking-tight leading-tight">
+                            Ready to elevate <br class="hidden sm:block lg:hidden" /> your lifestyle?
                         </h3>
-                        <p class="mt-2 text-sm md:text-base text-gray-500 leading-relaxed">
-                            Discover our full collection of premium essentials. Quality, security, and
-                            elegance—delivered straight to your door.
+                        <p class="mt-4 text-base md:text-base text-black/50 leading-relaxed font-medium">
+                            Discover our full collection of premium essentials.
+                            Quality, security, and elegance — delivered straight to your door.
                         </p>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row gap-4 shrink-0">
+                    <div class="flex flex-col sm:flex-row gap-4 shrink-0 w-full sm:w-auto">
+                        {{-- Primary Button --}}
                         <a href="{{ route('shop.index') }}"
-                            class="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-bold bg-[#D4AF37] text-white shadow-lg shadow-[#D4AF37]/20 hover:bg-[#8f6a10] hover:-translate-y-0.5 transition-all duration-300">
+                            class="group inline-flex items-center justify-center px-10 py-4 rounded-full
+                           text-sm font-black uppercase tracking-widest
+                           bg-[#D4AF37] text-black
+                           shadow-xl shadow-[#D4AF37]/20
+                           hover:bg-black hover:text-white hover:-translate-y-1
+                           transition-all duration-300">
                             Start Shopping
-                            <svg xmlns="http://www.w3.org/2000/svg" class="ml-2 h-4 w-4" fill="none"
-                                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <svg xmlns="http://www.w3.org/2000/svg"
+                                class="ml-2 h-4 w-4 transform transition-transform group-hover:translate-x-1"
+                                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M14.25 7.75L18.5 12m0 0l-4.25 4.25M18.5 12H5.5" />
                             </svg>
                         </a>
 
-                        {{-- Optional Secondary Button --}}
+                        {{-- Secondary Button --}}
                         <a href="#categories"
-                            class="inline-flex items-center justify-center px-8 py-3.5 rounded-full text-sm font-bold bg-white text-gray-900 border border-gray-200 hover:bg-gray-50 transition-all duration-300">
+                            class="inline-flex items-center justify-center px-10 py-4 rounded-full
+                           text-sm font-black uppercase tracking-widest
+                           bg-white text-black
+                           border border-black/5
+                           hover:bg-black hover:text-white hover:border-black
+                           transition-all duration-300">
                             View Categories
                         </a>
                     </div>

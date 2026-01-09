@@ -40,12 +40,12 @@
     </div>
 
     {{-- Global Footer --}}
-    <footer class="relative overflow-hidden bg-[#FAF9F6] border-t border-gray-100">
+    <footer class="relative overflow-hidden bg-black text-white border-t border-white/10">
         {{-- Soft premium background glow --}}
         <div class="absolute inset-0 pointer-events-none">
             <div class="absolute -top-32 -left-40 w-[520px] h-[520px] rounded-full bg-[#D4AF37]/10 blur-3xl"></div>
-            <div class="absolute -bottom-40 -right-40 w-[620px] h-[620px] rounded-full bg-black/5 blur-3xl"></div>
-            <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-gray-200/70 to-transparent">
+            <div class="absolute -bottom-40 -right-40 w-[620px] h-[620px] rounded-full bg-white/5 blur-3xl"></div>
+            <div class="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent">
             </div>
         </div>
 
@@ -57,17 +57,16 @@
                 {{-- Brand --}}
                 <div class="lg:col-span-4">
                     <div class="flex items-center gap-3 mb-6">
-                        <div
-                            class="h-10 w-10 rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#8f6a10] flex items-center justify-center text-[10px] font-extrabold text-white shadow-sm">
-                            EX
-                        </div>
+                        <img src="{{ asset('images/logo.png') }}" alt="BR Store"
+                            class="h-10 w-10 rounded-2xl object-cover shadow-lg shadow-[#D4AF37]/20" />
+
                         <div class="flex flex-col leading-tight">
-                            <span class="text-xl font-bold tracking-tight text-gray-900">Shop</span>
+                            <span class="text-xl font-bold tracking-tight text-white">Shop</span>
                             <span class="text-xs text-gray-400 tracking-wide">Premium Essentials</span>
                         </div>
                     </div>
 
-                    <p class="text-sm text-gray-600 leading-relaxed max-w-sm">
+                    <p class="text-sm text-gray-300 leading-relaxed max-w-sm">
                         Curating high-quality essentials for the modern Malaysian lifestyle.
                         Excellence in every detail, delivered with care.
                     </p>
@@ -76,7 +75,7 @@
                     <div class="mt-6">
                         <span
                             class="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest
-                               text-[#8f6a10] bg-white/70 border border-[#D4AF37]/20 px-3 py-1 rounded-full">
+                               text-[#D4AF37] bg-white/5 border border-white/10 px-3 py-1 rounded-full">
                             Malaysia • Crafted with care
                         </span>
                     </div>
@@ -84,16 +83,16 @@
 
                 {{-- Explore --}}
                 <div class="lg:col-span-2 lg:col-start-5">
-                    <h4 class="text-gray-900 font-extrabold text-sm uppercase tracking-wider">
+                    <h4 class="text-white font-extrabold text-sm uppercase tracking-wider">
                         Explore
                     </h4>
-                    <div class="h-px w-10 bg-gray-200 mt-4 mb-6"></div>
+                    <div class="h-px w-10 bg-white/15 mt-4 mb-6"></div>
 
                     <ul class="space-y-4">
                         @foreach (['Shop All', 'New Arrivals', 'Best Sellers', 'Contact Us'] as $link)
                             <li>
                                 <a href="#"
-                                    class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
+                                    class="text-sm text-gray-300 hover:text-white transition relative inline-block
                                       after:content-[''] after:absolute after:left-0 after:-bottom-1
                                       after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                       after:transition-all after:duration-300">
@@ -106,16 +105,16 @@
 
                 {{-- Support --}}
                 <div class="lg:col-span-2">
-                    <h4 class="text-gray-900 font-extrabold text-sm uppercase tracking-wider">
+                    <h4 class="text-white font-extrabold text-sm uppercase tracking-wider">
                         Support
                     </h4>
-                    <div class="h-px w-10 bg-gray-200 mt-4 mb-6"></div>
+                    <div class="h-px w-10 bg-white/15 mt-4 mb-6"></div>
 
                     <ul class="space-y-4">
                         @foreach (['Privacy Policy', 'Shipping & Delivery', 'Returns & Refunds', 'Terms of Service'] as $link)
                             <li>
                                 <a href="#"
-                                    class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
+                                    class="text-sm text-gray-300 hover:text-white transition relative inline-block
                                       after:content-[''] after:absolute after:left-0 after:-bottom-1
                                       after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                       after:transition-all after:duration-300">
@@ -128,15 +127,15 @@
 
                 {{-- Account --}}
                 <div class="lg:col-span-2">
-                    <h4 class="text-gray-900 font-extrabold text-sm uppercase tracking-wider">
+                    <h4 class="text-white font-extrabold text-sm uppercase tracking-wider">
                         Account
                     </h4>
-                    <div class="h-px w-10 bg-gray-200 mt-4 mb-6"></div>
+                    <div class="h-px w-10 bg-white/15 mt-4 mb-6"></div>
 
                     <ul class="space-y-4">
                         <li>
                             <a href="{{ route('account.index') }}"
-                                class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
+                                class="text-sm text-gray-300 hover:text-white transition relative inline-block
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
@@ -145,7 +144,7 @@
                         </li>
                         <li>
                             <a href="{{ route('account.orders.index') }}"
-                                class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
+                                class="text-sm text-gray-300 hover:text-white transition relative inline-block
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
@@ -154,7 +153,7 @@
                         </li>
                         <li>
                             <a href="#"
-                                class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
+                                class="text-sm text-gray-300 hover:text-white transition relative inline-block
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
@@ -163,7 +162,7 @@
                         </li>
                         <li>
                             <a href="#"
-                                class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
+                                class="text-sm text-gray-300 hover:text-white transition relative inline-block
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
@@ -175,15 +174,15 @@
 
                 {{-- Social Media --}}
                 <div class="lg:col-span-2">
-                    <h4 class="text-gray-900 font-extrabold text-sm uppercase tracking-wider">
+                    <h4 class="text-white font-extrabold text-sm uppercase tracking-wider">
                         Social Media
                     </h4>
-                    <div class="h-px w-10 bg-gray-200 mt-4 mb-6"></div>
+                    <div class="h-px w-10 bg-white/15 mt-4 mb-6"></div>
 
                     <ul class="space-y-4">
                         <li>
                             <a href="#"
-                                class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
+                                class="text-sm text-gray-300 hover:text-white transition relative inline-block
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
@@ -192,7 +191,7 @@
                         </li>
                         <li>
                             <a href="#"
-                                class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
+                                class="text-sm text-gray-300 hover:text-white transition relative inline-block
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
@@ -201,7 +200,7 @@
                         </li>
                         <li>
                             <a href="#"
-                                class="text-sm text-gray-500 hover:text-gray-900 transition relative inline-block
+                                class="text-sm text-gray-300 hover:text-white transition relative inline-block
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
@@ -210,7 +209,7 @@
                         </li>
 
                         <li class="text-sm text-gray-400">
-                            <a href="mailto:support@yourshop.com" class="hover:text-gray-600 transition">
+                            <a href="mailto:support@yourshop.com" class="hover:text-white transition">
                                 support@yourshop.com
                             </a>
                         </li>
@@ -221,7 +220,7 @@
 
             {{-- Bottom Bar --}}
             <div
-                class="mt-14 pt-8 border-t border-gray-200/70 flex flex-col md:flex-row justify-between items-center gap-4">
+                class="mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
                 <p class="text-sm text-gray-400 font-medium">
                     © {{ date('Y') }} Shop. Built with pride in Malaysia.
                 </p>
@@ -246,6 +245,7 @@
 
         </div>
     </footer>
+
 
 
 
