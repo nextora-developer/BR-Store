@@ -70,7 +70,9 @@ class AdminVoucherController extends Controller
 
     private function validateData(Request $request, ?int $ignoreId = null): array
     {
-        return $request->validate([
+        $benefit = $request->input('benefit', 'order');
+
+        $rules = [
             'code' => [
                 'required',
                 'string',
@@ -78,13 +80,46 @@ class AdminVoucherController extends Controller
                 Rule::unique('vouchers', 'code')->ignore($ignoreId),
             ],
             'name' => ['required', 'string', 'max:120'],
+
+            // ✅ 新增：benefit
+            'benefit' => ['required', Rule::in(['order', 'free_shipping'])],
+
+            // type 仍然保留（order 用）
             'type' => ['required', Rule::in(['fixed', 'percent'])],
-            'value' => ['required', 'numeric', 'min:0.01'],
+
+            // ✅ value：只有 order 才 required + min:0.01
+            'value' => $benefit === 'order'
+                ? ['required', 'numeric', 'min:0.01']
+                : ['nullable', 'numeric', 'min:0'],
+
             'min_spend' => ['nullable', 'numeric', 'min:0'],
             'usage_limit' => ['nullable', 'integer', 'min:1'],
             'starts_at' => ['nullable', 'date'],
             'expires_at' => ['nullable', 'date', 'after_or_equal:starts_at'],
             'is_active' => ['nullable', 'boolean'],
-        ]);
+        ];
+
+        $data = $request->validate($rules);
+
+        // ✅ 保险：free shipping 永远固定为 value=0 & type=fixed
+        if (($data['benefit'] ?? 'order') === 'free_shipping') {
+            $data['value'] = 0;
+            $data['type'] = 'fixed';
+        }
+
+        return $data;
+    }
+
+    public function destroy(Voucher $voucher)
+    {
+        // ✅ 可选：如果你不想保留使用记录，先 detach
+        // （不会影响 orders，因为订单是存 snapshot）
+        $voucher->users()->detach();
+
+        $voucher->delete();
+
+        return redirect()
+            ->route('admin.vouchers.index')
+            ->with('success', 'Voucher deleted successfully.');
     }
 }

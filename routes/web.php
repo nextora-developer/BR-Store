@@ -234,7 +234,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     // Voucher
     Route::resource('/vouchers', AdminVoucherController::class)->except(['show']);
     Route::post('/vouchers/{voucher}/toggle', [AdminVoucherController::class, 'toggle'])->name('vouchers.toggle');
-
+    Route::delete('/vouchers/{voucher}', [AdminVoucherController::class, 'destroy'])->name('vouchers.destroy');
 });
 
 /*

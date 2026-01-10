@@ -285,6 +285,19 @@
                                             <span>- RM {{ number_format($order->voucher_discount, 2) }}</span>
                                         </div>
                                     @endif
+
+                                    {{-- ✅ Shipping Discount (Free Shipping / Shipping Voucher) --}}
+                                    @if ($order->shipping_discount > 0)
+                                        <div class="flex justify-between text-green-700 font-medium">
+                                            <span>
+                                                Shipping Discount
+                                                @if ($order->voucher_code)
+                                                    ({{ $order->voucher_code }})
+                                                @endif
+                                            </span>
+                                            <span>- RM {{ number_format($order->shipping_discount, 2) }}</span>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <div class="h-px bg-[#D4AF37]/20 my-4"></div>

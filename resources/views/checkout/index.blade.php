@@ -520,6 +520,7 @@
                                     $applied = session('applied_voucher'); // ['voucher_id','code','discount']
                                     $voucherCode = $applied['code'] ?? null;
                                     $voucherDiscount = (float) ($applied['discount'] ?? 0);
+                                    $voucherBenefit = $applied['benefit'] ?? null; // ✅
                                 @endphp
 
                                 {{-- 小计 / 运费 / 总额 --}}
@@ -549,6 +550,16 @@
                                         </span>
                                         <span class="font-black text-green-700 text-right">
                                             - RM <span id="voucherDiscountText">0.00</span>
+                                        </span>
+                                    </div>
+
+                                    {{-- Shipping Discount Row (for free shipping) --}}
+                                    <div id="shippingDiscountRow" class="hidden flex justify-between text-sm">
+                                        <span class="text-gray-500">
+                                            Shipping Discount (<span id="shippingVoucherCodeText"></span>)
+                                        </span>
+                                        <span class="font-black text-green-700 text-right">
+                                            - RM <span id="shippingDiscountText">0.00</span>
                                         </span>
                                     </div>
 
@@ -601,7 +612,9 @@
 
                                 {{-- 初始值给 JS 用（不会 reload） --}}
                                 <span id="voucherState" data-code="{{ $voucherCode ?? '' }}"
-                                    data-discount="{{ $voucherDiscount }}" class="hidden"></span>
+                                    data-discount="{{ $voucherDiscount }}"
+                                    data-benefit="{{ $voucherBenefit ?? '' }}" class="hidden"></span>
+
 
 
                                 {{-- Remark / Order Notes --}}
@@ -867,6 +880,11 @@
             const voucherCodeText = document.getElementById('voucherCodeText');
             const voucherDiscountText = document.getElementById('voucherDiscountText');
 
+            const shippingDiscountRow = document.getElementById('shippingDiscountRow');
+            const shippingVoucherCodeText = document.getElementById('shippingVoucherCodeText');
+            const shippingDiscountText = document.getElementById('shippingDiscountText');
+
+
             const voucherAppliedBox = document.getElementById('voucherAppliedBox');
             const voucherAppliedCode = document.getElementById('voucherAppliedCode');
             const voucherInputBox = document.getElementById('voucherInputBox');
@@ -881,6 +899,7 @@
             // ✅ 让 voucherDiscount 可变（apply/remove 后会更新）
             let currentVoucherCode = (voucherStateEl?.dataset.code || '').trim();
             let currentVoucherDiscount = Number(voucherStateEl?.dataset.discount || 0);
+            let currentVoucherBenefit = (voucherStateEl?.dataset.benefit || '').trim(); // ✅
 
             function showMsg(text, ok = true) {
                 if (!voucherMsg) return;
@@ -902,6 +921,15 @@
                 return Number(shippingRates[zone] ?? 0);
             }
 
+            function getShippingDiscount(shippingFee) {
+                // free_shipping voucher 才抵运费
+                if (currentVoucherBenefit === 'free_shipping' && hasPhysical) {
+                    return shippingFee; // 全免
+                }
+                return 0;
+            }
+
+
             function renderShipping() {
                 if (!hasPhysical) {
                     shippingText.textContent = 'Digital Product (Free)';
@@ -921,30 +949,55 @@
             }
 
             function renderVoucher() {
-                const has = currentVoucherDiscount > 0 && currentVoucherCode;
+                const has = !!currentVoucherCode;
 
                 if (has) {
-                    // Summary row show
-                    voucherRow?.classList.remove('hidden');
-                    if (voucherCodeText) voucherCodeText.textContent = currentVoucherCode;
-                    if (voucherDiscountText) voucherDiscountText.textContent = currentVoucherDiscount.toFixed(2);
-
                     // Applied box show, input hide
                     voucherAppliedBox?.classList.remove('hidden');
                     if (voucherAppliedCode) voucherAppliedCode.textContent = currentVoucherCode;
                     voucherInputBox?.classList.add('hidden');
+
+                    // ✅ order discount 才显示 voucherRow
+                    if (currentVoucherBenefit !== 'free_shipping' && currentVoucherDiscount > 0) {
+                        voucherRow?.classList.remove('hidden');
+                        if (voucherCodeText) voucherCodeText.textContent = currentVoucherCode;
+                        if (voucherDiscountText) voucherDiscountText.textContent = currentVoucherDiscount.toFixed(
+                            2);
+                    } else {
+                        voucherRow?.classList.add('hidden');
+                    }
+
+                    // ✅ free shipping 才显示 shippingDiscountRow（金额在 renderTotals 里填）
+                    if (currentVoucherBenefit === 'free_shipping') {
+                        shippingDiscountRow?.classList.remove('hidden');
+                        if (shippingVoucherCodeText) shippingVoucherCodeText.textContent = currentVoucherCode;
+                    } else {
+                        shippingDiscountRow?.classList.add('hidden');
+                    }
                 } else {
                     voucherRow?.classList.add('hidden');
-
+                    shippingDiscountRow?.classList.add('hidden');
                     voucherAppliedBox?.classList.add('hidden');
                     voucherInputBox?.classList.remove('hidden');
                 }
             }
 
+
             function renderTotals() {
                 const shippingFee = getShippingFee();
+                const shippingDiscount = getShippingDiscount(shippingFee);
+
                 const discountedSubtotal = Math.max(0, subtotal - currentVoucherDiscount);
-                const finalTotal = discountedSubtotal + shippingFee;
+                const payableShipping = Math.max(0, shippingFee - shippingDiscount);
+
+                const finalTotal = discountedSubtotal + payableShipping;
+
+                totalText.textContent = 'RM ' + finalTotal.toFixed(2);
+                if (payAmountEl) payAmountEl.textContent = 'RM ' + finalTotal.toFixed(2);
+
+                // ✅ 更新 shipping discount row 数字
+                if (shippingDiscountText) shippingDiscountText.textContent = shippingDiscount.toFixed(2);
+
 
                 totalText.textContent = 'RM ' + finalTotal.toFixed(2);
                 if (payAmountEl) payAmountEl.textContent = 'RM ' + finalTotal.toFixed(2);
@@ -1019,6 +1072,7 @@
                         // ✅ 更新本地状态，不 reload
                         currentVoucherCode = data.code;
                         currentVoucherDiscount = Number(data.discount || 0);
+                        currentVoucherBenefit = (data.benefit || '').trim();
 
                         showMsg('Voucher applied.', true);
                         refreshAll();
@@ -1050,6 +1104,7 @@
 
                         currentVoucherCode = '';
                         currentVoucherDiscount = 0;
+                        currentVoucherBenefit = '';
 
                         showMsg('Voucher removed.', true);
                         refreshAll();

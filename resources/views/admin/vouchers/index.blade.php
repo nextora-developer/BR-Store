@@ -75,6 +75,9 @@
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider">Name</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider w-[120px]">
                             Type</th>
+                        <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider w-[140px]">
+                            Benefit
+                        </th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider w-[120px]">
                             Value</th>
                         <th class="px-6 py-4 text-left text-xs font-bold text-gray-400 uppercase tracking-wider w-[130px]">
@@ -107,6 +110,14 @@
                                 </span>
                             </td>
 
+                            <td
+                                class="px-6 py-4 font-semibold
+                                {{ ($v->benefit ?? 'order') === 'free_shipping' ? 'text-emerald-700' : 'text-blue-700' }}">
+                                {{ ($v->benefit ?? 'order') === 'free_shipping' ? 'Free Shipping' : 'Order Discount' }}
+                            </td>
+
+
+
                             <td class="px-6 py-4 font-bold text-gray-900">
                                 @if ($v->type === 'fixed')
                                     RM {{ number_format($v->value, 2) }}
@@ -114,6 +125,8 @@
                                     {{ rtrim(rtrim(number_format($v->value, 2), '0'), '.') }}%
                                 @endif
                             </td>
+
+
 
                             <td class="px-6 py-4 text-gray-500">
                                 {{ $v->min_spend !== null ? 'RM ' . number_format($v->min_spend, 2) : '—' }}
@@ -170,7 +183,7 @@
                                         <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414
-                                                       a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                                   a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                         </svg>
                                     </a>
 
@@ -182,8 +195,9 @@
                                             title="Delete">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none"
                                                 viewBox="0 0 24 24" stroke="currentColor">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6
-                                                           m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6
+                                                                       m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                             </svg>
                                         </button>
                                     </form>

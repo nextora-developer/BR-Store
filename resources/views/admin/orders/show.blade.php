@@ -58,9 +58,9 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5
-                                     c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639
-                                     C20.577 16.49 16.64 19.5 12 19.5
-                                     c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                         c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639
+                                         C20.577 16.49 16.64 19.5 12 19.5
+                                         c-4.638 0-8.573-3.007-9.963-7.178z" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
 
@@ -271,6 +271,25 @@
                                     </div>
                                 @endif
 
+                                {{-- ✅ Shipping Discount (Free Shipping) --}}
+                                @if (($order->shipping_discount ?? 0) > 0)
+                                    <div class="flex justify-between items-center text-sm">
+                                        <span class="text-gray-500 font-medium flex items-center gap-1">
+                                            Shipping Discount
+                                            @if ($order->voucher_code)
+                                                <span
+                                                    class="text-[10px] px-2 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-200 font-bold tracking-wide">
+                                                    {{ $order->voucher_code }}
+                                                </span>
+                                            @endif
+                                        </span>
+
+                                        <span class="font-bold tracking-tight text-green-700">
+                                            - <span
+                                                class="text-sm font-normal mr-0.5">RM</span>{{ number_format($order->shipping_discount, 2) }}
+                                        </span>
+                                    </div>
+                                @endif
 
                                 <div class="pt-4 mt-2 border-t border-gray-100 flex justify-between items-end">
                                     <div class="flex flex-col">

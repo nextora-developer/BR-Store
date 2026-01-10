@@ -12,7 +12,8 @@
         <a href="{{ route('admin.vouchers.index') }}"
             class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-200
                    text-sm font-semibold text-gray-600 hover:bg-gray-50 transition shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
             </svg>
             <span>Back</span>
@@ -65,15 +66,34 @@
                 </div>
 
                 <div>
+                    <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Benefit</label>
+                    <select name="benefit" id="benefit"
+                        class="mt-2 w-full px-4 py-3 bg-gray-50 border-transparent rounded-xl text-sm
+               focus:bg-white focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] transition-all">
+                        <option value="order" @selected(old('benefit', $voucher->benefit ?? 'order') === 'order')>
+                            Order Discount (Subtotal)
+                        </option>
+                        <option value="free_shipping" @selected(old('benefit', $voucher->benefit ?? '') === 'free_shipping')>
+                            Free Shipping
+                        </option>
+                    </select>
+                    @error('benefit')
+                        <p class="text-xs text-red-600 mt-2 font-semibold">{{ $message }}</p>
+                    @enderror
+                </div>
+
+
+                <div id="valueWrap">
                     <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Value</label>
-                    <input name="value" type="number" step="0.01" min="0"
+                    <input name="value" id="valueInput" type="number" step="0.01" min="0"
                         value="{{ old('value', $voucher->value) }}" placeholder="10"
                         class="mt-2 w-full px-4 py-3 bg-gray-50 border-transparent rounded-xl text-sm
-                               focus:bg-white focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] transition-all">
+               focus:bg-white focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] transition-all">
                     @error('value')
                         <p class="text-xs text-red-600 mt-2 font-semibold">{{ $message }}</p>
                     @enderror
                 </div>
+
 
                 <div>
                     <label class="text-xs font-bold text-gray-500 uppercase tracking-wider">Min Spend</label>
@@ -144,3 +164,22 @@
         </form>
     </div>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const benefit = document.getElementById('benefit');
+            const valueWrap = document.getElementById('valueWrap');
+            const valueInput = document.getElementById('valueInput');
+
+            function sync() {
+                const isFreeShip = benefit.value === 'free_shipping';
+                valueWrap.classList.toggle('hidden', isFreeShip);
+                if (isFreeShip) valueInput.value = 0;
+            }
+
+            benefit.addEventListener('change', sync);
+            sync();
+        });
+    </script>
+@endpush

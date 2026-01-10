@@ -47,6 +47,7 @@ class Order extends Model
         'voucher_id',
         'voucher_code',
         'voucher_discount',
+        'shipping_discount',
     ];
 
     protected $casts = [

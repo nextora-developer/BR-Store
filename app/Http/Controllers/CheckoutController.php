@@ -154,36 +154,54 @@ class CheckoutController extends Controller
         /**
          * ✅ 3.5️⃣ Voucher（从 session 读，但必须在后端“重算 + 重验”）
          */
-        $applied = session('applied_voucher'); // ['voucher_id','code','discount']
+        /**
+         * ✅ 3.5️⃣ Voucher（从 session 读，但必须在后端“重算 + 重验”）
+         */
+        $applied   = session('applied_voucher'); // ['voucher_id','code','benefit','discount']
         $voucherId = $applied['voucher_id'] ?? null;
 
         $voucherCode = null;
         $voucherDiscount = 0.0;
+        $shippingDiscount = 0.0;   // ✅ 新增：运费折扣
         $voucher = null;
 
         if ($voucherId) {
             $voucher = Voucher::find($voucherId);
 
-            // 任何不符合 → 直接当作没用券（避免用户篡改 session）
             if (
                 $voucher
                 && $voucher->isAvailable()
                 && ($voucher->min_spend === null || $subtotal >= (float)$voucher->min_spend)
                 && !($voucher->usage_limit !== null && $voucher->used_count >= $voucher->usage_limit)
             ) {
-                // 如果你有 “每人只能用一次” 的规则
                 $alreadyUsed = $voucher->users()->where('user_id', auth()->id())->exists();
+
                 if (! $alreadyUsed) {
                     $voucherCode = $voucher->code;
-                    $voucherDiscount = (float) $voucher->calculateDiscount($subtotal);
+
+                    $benefit = $voucher->benefit ?? 'order'; // order | free_shipping
+
+                    if ($benefit === 'free_shipping') {
+                        // ✅ 免运费：把 shipping 抵掉（只在有实体商品时才有意义）
+                        if ($hasPhysical && $shippingFee > 0) {
+                            $shippingDiscount = $shippingFee;
+                        }
+                    } else {
+                        // ✅ 默认：扣 subtotal
+                        $voucherDiscount = (float) $voucher->calculateDiscount($subtotal);
+                    }
                 }
             }
         }
 
-        // ✅ 折扣只扣 subtotal，不影响 shipping
+        // ✅ 折扣只扣 subtotal
         $payableSubtotal = max(0, $subtotal - $voucherDiscount);
 
-        $total = $payableSubtotal + $shippingFee;
+        // ✅ 免运费：shippingFee - shippingDiscount
+        $payableShipping = max(0, $shippingFee - $shippingDiscount);
+
+        $total = $payableSubtotal + $payableShipping;
+
 
 
         /**
@@ -223,6 +241,7 @@ class CheckoutController extends Controller
             $voucher,
             $voucherCode,
             $voucherDiscount,
+            $shippingDiscount,
             &$order
         ) {
             $order = Order::create([
@@ -242,6 +261,7 @@ class CheckoutController extends Controller
                 'voucher_id'           => $voucher?->id,
                 'voucher_code'         => $voucherCode,
                 'voucher_discount'     => $voucherDiscount,
+                'shipping_discount'    => $shippingDiscount,
                 'total'               => $total,
                 'status'              => 'pending',
                 'payment_method_code' => $paymentMethod->code,
@@ -261,15 +281,14 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            if ($voucher && $voucherDiscount > 0) {
-                // 1) used_count +1
+            if ($voucher && (($voucherDiscount > 0) || ($shippingDiscount > 0))) {
                 $voucher->increment('used_count');
 
-                // 2) pivot 记录 used_at（每人一次）
                 $voucher->users()->syncWithoutDetaching([
                     auth()->id() => ['used_at' => now()],
                 ]);
             }
+
 
             $cart->items()->delete();
         });
