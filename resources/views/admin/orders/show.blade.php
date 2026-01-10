@@ -58,9 +58,9 @@
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
                         stroke="currentColor" class="w-4 h-4">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5
-                                 c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639
-                                 C20.577 16.49 16.64 19.5 12 19.5
-                                 c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                     c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639
+                                     C20.577 16.49 16.64 19.5 12 19.5
+                                     c-4.638 0-8.573-3.007-9.963-7.178z" />
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
 
@@ -198,7 +198,7 @@
                 </div>
 
                 {{-- Totals + Remark Area --}}
-                <div class="p-8 bg-white border-t border-gray-100 grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+                <div class="p-8 bg-white border-t border-gray-100 grid grid-cols-1 md:grid-cols-4 gap-8 items-start">
 
                     {{-- 🟡 Order Remark (Left, Span 2) --}}
                     <div class="md:col-span-2 space-y-2">
@@ -227,15 +227,15 @@
                     </div>
 
                     {{-- 🟢 Totals (Right, Span 1) --}}
-                    <div class="md:col-span-1 flex md:justify-end">
+                    <div class="md:col-span-2 flex md:justify-end">
                         <div
                             class="w-full max-w-xs bg-white rounded-2xl border border-gray-50 p-4 shadow-sm md:shadow-none md:border-none md:p-0">
                             <div class="space-y-3">
                                 <div class="flex justify-between items-center text-sm">
                                     <span class="text-gray-500 font-medium">Subtotal</span>
                                     <span class="text-gray-900 font-bold tracking-tight">
-                                        <span
-                                            class="text-sm text-gray-400 mr-0.5 font-normal">RM </span>{{ number_format($order->subtotal ?? 0, 2) }}
+                                        <span class="text-sm text-gray-400 mr-0.5 font-normal">RM
+                                        </span>{{ number_format($order->subtotal ?? 0, 2) }}
                                     </span>
                                 </div>
 
@@ -244,13 +244,33 @@
                                     <span
                                         class="font-bold tracking-tight {{ ($order->shipping_fee ?? 0) > 0 ? 'text-gray-900' : 'text-green-600' }}">
                                         @if (($order->shipping_fee ?? 0) > 0)
-                                            <span
-                                                class="text-sm text-gray-400 mr-0.5 font-normal">RM </span>{{ number_format($order->shipping_fee, 2) }}
+                                            <span class="text-sm text-gray-400 mr-0.5 font-normal">RM
+                                            </span>{{ number_format($order->shipping_fee, 2) }}
                                         @else
                                             FREE
                                         @endif
                                     </span>
                                 </div>
+
+                                @if (($order->voucher_discount ?? 0) > 0)
+                                    <div class="flex justify-between items-center text-sm">
+                                        <span class="text-gray-500 font-medium flex items-center gap-1">
+                                            Voucher
+                                            @if ($order->voucher_code)
+                                                <span
+                                                    class="text-[10px] px-2 py-0.5 rounded-full bg-green-50 text-green-700 border border-green-200 font-bold tracking-wide">
+                                                    {{ $order->voucher_code }}
+                                                </span>
+                                            @endif
+                                        </span>
+
+                                        <span class="font-bold tracking-tight text-green-700">
+                                            - <span
+                                                class="text-sm font-normal mr-0.5">RM</span>{{ number_format($order->voucher_discount, 2) }}
+                                        </span>
+                                    </div>
+                                @endif
+
 
                                 <div class="pt-4 mt-2 border-t border-gray-100 flex justify-between items-end">
                                     <div class="flex flex-col">
