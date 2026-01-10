@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('voucher_user', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('voucher_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->timestamp('used_at')->useCurrent();
+
+            $table->unique(['voucher_id', 'user_id']); // 一人一次
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('voucher_user');
+    }
+};

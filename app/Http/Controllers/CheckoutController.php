@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\Order;
 use App\Models\PaymentMethod;
 use App\Models\ShippingRate;
+use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use App\Mail\OrderPlacedMail;
@@ -131,7 +132,7 @@ class CheckoutController extends Controller
             ->firstOrFail();
 
         $items    = $cart->items;
-        $subtotal = $items->sum(fn($i) => $i->unit_price * $i->qty);
+        $subtotal = (float) $items->sum(fn($i) => $i->unit_price * $i->qty);
 
         // 是否包含实体产品
         $hasPhysical = $items->contains(fn($item) => !$item->product->is_digital);
@@ -145,12 +146,44 @@ class CheckoutController extends Controller
                 ? 'east_my'
                 : 'west_my';
 
-            $shippingFee = ShippingRate::where('code', $zoneCode)->value('rate') ?? 0;
+            $shippingFee = (float) (ShippingRate::where('code', $zoneCode)->value('rate') ?? 0);
         } else {
-            $shippingFee = ShippingRate::where('code', 'digital')->value('rate') ?? 0;
+            $shippingFee = (float) (ShippingRate::where('code', 'digital')->value('rate') ?? 0);
         }
 
-        $total = $subtotal + $shippingFee;
+        /**
+         * ✅ 3.5️⃣ Voucher（从 session 读，但必须在后端“重算 + 重验”）
+         */
+        $applied = session('applied_voucher'); // ['voucher_id','code','discount']
+        $voucherId = $applied['voucher_id'] ?? null;
+
+        $voucherCode = null;
+        $voucherDiscount = 0.0;
+        $voucher = null;
+
+        if ($voucherId) {
+            $voucher = Voucher::find($voucherId);
+
+            // 任何不符合 → 直接当作没用券（避免用户篡改 session）
+            if (
+                $voucher
+                && $voucher->isAvailable()
+                && ($voucher->min_spend === null || $subtotal >= (float)$voucher->min_spend)
+                && !($voucher->usage_limit !== null && $voucher->used_count >= $voucher->usage_limit)
+            ) {
+                // 如果你有 “每人只能用一次” 的规则
+                $alreadyUsed = $voucher->users()->where('user_id', auth()->id())->exists();
+                if (! $alreadyUsed) {
+                    $voucherCode = $voucher->code;
+                    $voucherDiscount = (float) $voucher->calculateDiscount($subtotal);
+                }
+            }
+        }
+
+        // ✅ 折扣只扣 subtotal，不影响 shipping
+        $payableSubtotal = max(0, $subtotal - $voucherDiscount);
+
+        $total = $payableSubtotal + $shippingFee;
 
 
         /**
@@ -187,6 +220,9 @@ class CheckoutController extends Controller
             $cart,
             $orderNo,
             $total,
+            $voucher,
+            $voucherCode,
+            $voucherDiscount,
             &$order
         ) {
             $order = Order::create([
@@ -203,6 +239,9 @@ class CheckoutController extends Controller
                 'country'             => $request->country,
                 'subtotal'            => $subtotal,
                 'shipping_fee'        => $shippingFee,
+                'voucher_id'           => $voucher?->id,
+                'voucher_code'         => $voucherCode,
+                'voucher_discount'     => $voucherDiscount,
                 'total'               => $total,
                 'status'              => 'pending',
                 'payment_method_code' => $paymentMethod->code,
@@ -222,8 +261,22 @@ class CheckoutController extends Controller
                 ]);
             }
 
+            if ($voucher && $voucherDiscount > 0) {
+                // 1) used_count +1
+                $voucher->increment('used_count');
+
+                // 2) pivot 记录 used_at（每人一次）
+                $voucher->users()->syncWithoutDetaching([
+                    auth()->id() => ['used_at' => now()],
+                ]);
+            }
+
             $cart->items()->delete();
         });
+
+        // ✅ 清掉已用 voucher session（避免下一单还带着）
+        session()->forget('applied_voucher');
+
 
 
         // 7️⃣ 发邮件

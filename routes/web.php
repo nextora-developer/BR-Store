@@ -5,6 +5,8 @@ use App\Http\Controllers\ShopController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\VoucherController;
+
 use App\Http\Controllers\Admin\AdminCategoryController;
 use App\Http\Controllers\Admin\AdminProductController;
 use App\Http\Controllers\Admin\AdminOrderController;
@@ -16,6 +18,7 @@ use App\Http\Controllers\Admin\AdminReportController;
 use App\Http\Controllers\Admin\AdminBannerController;
 use App\Http\Controllers\Admin\AdminPaymentMethodController;
 use App\Http\Controllers\Admin\AdminShippingController;
+use App\Http\Controllers\Admin\AdminVoucherController;
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountOrderController;
@@ -77,6 +80,9 @@ Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy
 Route::get('/shipping-delivery', [PageController::class, 'shipping'])->name('shipping');
 Route::get('/returns-refunds', [PageController::class, 'returns'])->name('returns');
 Route::get('/terms-of-service', [PageController::class, 'terms'])->name('terms');
+
+Route::post('/voucher/apply', [VoucherController::class, 'apply'])->name('voucher.apply');
+Route::post('/voucher/remove', [VoucherController::class, 'remove'])->name('voucher.remove');
 
 
 
@@ -224,6 +230,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::post('/shipping', [AdminShippingController::class, 'store'])->name('shipping.store');
     Route::get('/shipping/{rate}/edit', [AdminShippingController::class, 'edit'])->name('shipping.edit');
     Route::put('/shipping/{rate}', [AdminShippingController::class, 'update'])->name('shipping.update');
+
+    // Voucher
+    Route::resource('/vouchers', AdminVoucherController::class)->except(['show']);
+    Route::post('/vouchers/{voucher}/toggle', [AdminVoucherController::class, 'toggle'])->name('vouchers.toggle');
+
 });
 
 /*
@@ -239,9 +250,5 @@ Route::get('/pay/hitpay/{order}', [HitpayController::class, 'createPayment'])
 // 付款完成后浏览器跳回
 Route::get('/payment/hitpay/return', [HitpayController::class, 'handleReturn'])
     ->name('hitpay.return');
-
-// HitPay 服务器 Webhook（必须允许未登录访问）
-// Route::post('/payment/hitpay/webhook', [HitpayController::class, 'handleWebhook'])
-//     ->name('hitpay.webhook');
 
 require __DIR__ . '/auth.php';

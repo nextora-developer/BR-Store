@@ -76,4 +76,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(Cart::class);
     }
+
+    public function vouchers()
+    {
+        return $this->belongsToMany(\App\Models\Voucher::class, 'voucher_user')
+            ->withPivot('used_at');
+    }
 }

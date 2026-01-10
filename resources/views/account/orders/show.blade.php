@@ -247,7 +247,8 @@
                                         </h2>
 
                                         <p
-                                            class="mt-2 text-sm leading-relaxed break-words whitespace-pre-line {{ $order->remark ? 'text-gray-900' : 'text-gray-400 italic' }}">{{ $order->remark ? trim($order->remark) : 'No remark' }}</p>
+                                            class="mt-2 text-sm leading-relaxed break-words whitespace-pre-line {{ $order->remark ? 'text-gray-900' : 'text-gray-400 italic' }}">
+                                            {{ $order->remark ? trim($order->remark) : 'No remark' }}</p>
                                     </div>
 
 
@@ -271,6 +272,19 @@
                                         <span>Shipping Fee</span>
                                         <span>RM {{ number_format($order->shipping_fee, 2) }}</span>
                                     </div>
+
+                                    {{-- ✅ Voucher Discount --}}
+                                    @if ($order->voucher_discount > 0)
+                                        <div class="flex justify-between text-green-700 font-medium">
+                                            <span>
+                                                Voucher
+                                                @if ($order->voucher_code)
+                                                    ({{ $order->voucher_code }})
+                                                @endif
+                                            </span>
+                                            <span>- RM {{ number_format($order->voucher_discount, 2) }}</span>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <div class="h-px bg-[#D4AF37]/20 my-4"></div>
@@ -295,19 +309,20 @@
                                         <div class="flex items-center gap-2 pt-1">
                                             <button type="button" onclick="openReceiptModal({{ $order->id }})"
                                                 class="inline-flex items-center px-3 py-1.5 rounded-lg border border-gray-300
-                               bg-white/80 hover:bg-white text-xs font-medium text-gray-800">
+                                                        bg-white/80 hover:bg-white text-xs font-medium text-gray-800">
                                                 View Receipt
                                             </button>
 
                                             <a href="{{ asset('storage/' . $order->payment_receipt_path) }}" download
                                                 class="inline-flex items-center px-3 py-1.5 rounded-lg text-xs font-medium
-                               bg-[#D4AF37] text-white hover:bg-[#C49A2F]">
+                                                        bg-[#D4AF37] text-white hover:bg-[#C49A2F]">
                                                 Download
                                             </a>
                                         </div>
                                     @endif
                                 </div>
                             </div>
+
 
                         </div>
 

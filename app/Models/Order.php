@@ -43,6 +43,10 @@ class Order extends Model
         'gateway',
 
         'remark',
+
+        'voucher_id',
+        'voucher_code',
+        'voucher_discount',
     ];
 
     protected $casts = [

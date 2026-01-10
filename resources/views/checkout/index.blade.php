@@ -362,12 +362,12 @@
                                                                             class="text-[10px] uppercase font-bold text-[#8f6a10] block mb-1">
                                                                             Exact Amount to Pay
                                                                         </span>
-                                                                        <span
-                                                                            class="text-xl font-black text-[#8f6a10]">
-                                                                            RM
-                                                                            {{ number_format($amountToTransfer, 2) }}
+                                                                        <span class="text-xl font-black text-[#8f6a10]"
+                                                                            data-pay-amount>
+                                                                            RM 0.00
                                                                         </span>
                                                                     </div>
+
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -516,6 +516,12 @@
                                     @endforeach
                                 </div>
 
+                                @php
+                                    $applied = session('applied_voucher'); // ['voucher_id','code','discount']
+                                    $voucherCode = $applied['code'] ?? null;
+                                    $voucherDiscount = (float) ($applied['discount'] ?? 0);
+                                @endphp
+
                                 {{-- 小计 / 运费 / 总额 --}}
                                 <div class="space-y-3 bg-gray-50 rounded-2xl p-4">
                                     <div class="flex justify-between text-sm">
@@ -536,6 +542,17 @@
                                         </span>
                                     </div>
 
+                                    {{-- Voucher Summary Row (always exist, JS will toggle) --}}
+                                    <div id="voucherRow" class="hidden flex justify-between text-sm">
+                                        <span class="text-gray-500">
+                                            Voucher (<span id="voucherCodeText"></span>)
+                                        </span>
+                                        <span class="font-black text-green-700 text-right">
+                                            - RM <span id="voucherDiscountText">0.00</span>
+                                        </span>
+                                    </div>
+
+
                                     <div class="border-t border-gray-200 my-1 pt-3 flex justify-between items-center">
                                         <span class="text-base font-bold text-gray-900">Total</span>
                                         <div class="text-right">
@@ -548,6 +565,44 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                {{-- Voucher Box --}}
+                                <div class="mt-5">
+                                    <h3 class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Voucher
+                                    </h3>
+
+                                    <div id="voucherAppliedBox"
+                                        class="hidden flex items-center justify-between gap-3 bg-[#FDF3D7] border border-[#E6D8A8] rounded-2xl p-4">
+                                        <div class="min-w-0">
+                                            <p class="text-xs text-[#8f6a10] font-black tracking-wider uppercase">
+                                                Applied</p>
+                                            <p class="text-sm font-bold text-gray-900 truncate"
+                                                id="voucherAppliedCode">—</p>
+                                        </div>
+
+                                        <button type="button" id="btnRemoveVoucher"
+                                            class="px-3 py-2 rounded-xl bg-white border border-gray-200 text-xs font-bold text-gray-700 hover:bg-gray-50">
+                                            Remove
+                                        </button>
+                                    </div>
+
+                                    <div id="voucherInputBox" class="flex gap-2">
+                                        <input type="text" id="voucherCodeInput" placeholder="Enter code"
+                                            class="flex-1 px-4 py-3 rounded-2xl border border-gray-200 focus:border-[#D4AF37] focus:ring-2 focus:ring-[#D4AF37]/20 text-sm"
+                                            maxlength="50" autocomplete="off">
+                                        <button type="button" id="btnApplyVoucher"
+                                            class="px-4 py-3 rounded-2xl bg-gray-900 text-white text-sm font-bold hover:bg-black">
+                                            Apply
+                                        </button>
+                                    </div>
+
+                                    <div id="voucherMsg" class="mt-3 hidden text-xs font-bold"></div>
+                                </div>
+
+                                {{-- 初始值给 JS 用（不会 reload） --}}
+                                <span id="voucherState" data-code="{{ $voucherCode ?? '' }}"
+                                    data-discount="{{ $voucherDiscount }}" class="hidden"></span>
+
 
                                 {{-- Remark / Order Notes --}}
                                 <div class="mt-5">
@@ -800,50 +855,300 @@
             const stateSelect = document.querySelector('[data-state-select]');
             const shippingText = document.querySelector('[data-shipping-text]');
             const totalText = document.querySelector('[data-total-text]');
+            const payAmountEl = document.querySelector('[data-pay-amount]');
+
             const hasPhysical = @json($hasPhysical);
-            const shippingRates = @json($shippingRates); // { west_my: 8, east_my: 15, ... }
-            const subtotal = {{ $subtotal }}; // 纯数字
+            const shippingRates = @json($shippingRates);
+            const subtotal = Number({{ $subtotal }});
+
+            // Voucher UI
+            const voucherStateEl = document.getElementById('voucherState');
+            const voucherRow = document.getElementById('voucherRow');
+            const voucherCodeText = document.getElementById('voucherCodeText');
+            const voucherDiscountText = document.getElementById('voucherDiscountText');
+
+            const voucherAppliedBox = document.getElementById('voucherAppliedBox');
+            const voucherAppliedCode = document.getElementById('voucherAppliedCode');
+            const voucherInputBox = document.getElementById('voucherInputBox');
+            const voucherMsg = document.getElementById('voucherMsg');
+
+            const btnApplyVoucher = document.getElementById('btnApplyVoucher');
+            const btnRemoveVoucher = document.getElementById('btnRemoveVoucher');
+            const voucherCodeInput = document.getElementById('voucherCodeInput');
 
             if (!stateSelect || !shippingText || !totalText) return;
 
-            // 全部 digital → 永远 Free，Total = subtotal
-            if (!hasPhysical) {
-                shippingText.textContent = 'Digital Product (Free)';
-                totalText.textContent = 'RM ' + subtotal.toFixed(2);
-                return;
+            // ✅ 让 voucherDiscount 可变（apply/remove 后会更新）
+            let currentVoucherCode = (voucherStateEl?.dataset.code || '').trim();
+            let currentVoucherDiscount = Number(voucherStateEl?.dataset.discount || 0);
+
+            function showMsg(text, ok = true) {
+                if (!voucherMsg) return;
+                voucherMsg.classList.remove('hidden');
+                voucherMsg.textContent = text;
+                voucherMsg.className = 'mt-3 text-xs font-bold rounded-xl px-3 py-2 ' + (ok ?
+                    'bg-green-50 text-green-700 border border-green-200' :
+                    'bg-red-50 text-red-700 border border-red-200');
             }
 
-            function updateShipping() {
+            function getShippingFee() {
+                // Digital
+                if (!hasPhysical) return 0;
+
                 const selected = stateSelect.selectedOptions[0];
                 const zone = selected ? selected.dataset.zone : null;
+                if (!zone) return 0;
 
-                // 还没选 / 没有 zone → 待确认
-                if (!zone) {
-                    shippingText.textContent = 'To be confirmed';
-                    totalText.textContent = 'RM ' + subtotal.toFixed(2);
+                return Number(shippingRates[zone] ?? 0);
+            }
+
+            function renderShipping() {
+                if (!hasPhysical) {
+                    shippingText.textContent = 'Digital Product (Free)';
                     return;
                 }
 
-                const fee = Number(shippingRates[zone] ?? 0);
+                const selected = stateSelect.selectedOptions[0];
+                const zone = selected ? selected.dataset.zone : null;
 
-                if (fee === 0) {
-                    shippingText.textContent = 'Free';
-                    totalText.textContent = 'RM ' + subtotal.toFixed(2);
+                if (!zone) {
+                    shippingText.textContent = 'To be confirmed';
+                    return;
+                }
+
+                const fee = getShippingFee();
+                shippingText.textContent = (fee === 0) ? 'Free' : 'RM ' + fee.toFixed(2);
+            }
+
+            function renderVoucher() {
+                const has = currentVoucherDiscount > 0 && currentVoucherCode;
+
+                if (has) {
+                    // Summary row show
+                    voucherRow?.classList.remove('hidden');
+                    if (voucherCodeText) voucherCodeText.textContent = currentVoucherCode;
+                    if (voucherDiscountText) voucherDiscountText.textContent = currentVoucherDiscount.toFixed(2);
+
+                    // Applied box show, input hide
+                    voucherAppliedBox?.classList.remove('hidden');
+                    if (voucherAppliedCode) voucherAppliedCode.textContent = currentVoucherCode;
+                    voucherInputBox?.classList.add('hidden');
                 } else {
-                    shippingText.textContent = 'RM ' + fee.toFixed(2);
-                    totalText.textContent = 'RM ' + (subtotal + fee).toFixed(2);
+                    voucherRow?.classList.add('hidden');
+
+                    voucherAppliedBox?.classList.add('hidden');
+                    voucherInputBox?.classList.remove('hidden');
                 }
             }
 
-            stateSelect.addEventListener('change', updateShipping);
+            function renderTotals() {
+                const shippingFee = getShippingFee();
+                const discountedSubtotal = Math.max(0, subtotal - currentVoucherDiscount);
+                const finalTotal = discountedSubtotal + shippingFee;
 
-            // 页面加载时根据默认 state 算一次
-            updateShipping();
+                totalText.textContent = 'RM ' + finalTotal.toFixed(2);
+                if (payAmountEl) payAmountEl.textContent = 'RM ' + finalTotal.toFixed(2);
+            }
+
+            function refreshAll() {
+                renderShipping();
+                renderVoucher();
+                renderTotals();
+            }
+
+            // ✅ 地址必须先填好才 allow apply voucher
+            function validateAddressBeforeVoucher() {
+                const requiredNames = [
+                    'name', 'phone', 'email', 'address_line1', 'postcode', 'city', 'state', 'country'
+                ];
+
+                for (const n of requiredNames) {
+                    const el = document.querySelector(`[name="${n}"]`);
+                    const v = (el?.value || '').trim();
+
+                    if (!v) {
+                        showMsg('Please fill your shipping details before applying voucher.', false);
+                        el?.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'center'
+                        });
+                        el?.focus();
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            // state change updates shipping + totals
+            stateSelect.addEventListener('change', refreshAll);
+
+            // init
+            refreshAll();
+
+            // ✅ Apply voucher (no reload)
+            if (btnApplyVoucher) {
+                btnApplyVoucher.addEventListener('click', async () => {
+                    if (!validateAddressBeforeVoucher()) return;
+
+                    const code = (voucherCodeInput?.value || '').trim();
+                    if (!code) {
+                        showMsg('Please enter a voucher code.', false);
+                        return;
+                    }
+
+                    try {
+                        const res = await fetch("{{ route('voucher.apply') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Accept": "application/json",
+                            },
+                            body: JSON.stringify({
+                                code
+                            })
+                        });
+
+                        const data = await res.json().catch(() => null);
+
+                        if (!res.ok) {
+                            showMsg(data?.message || 'Voucher apply failed.', false);
+                            return;
+                        }
+
+                        // ✅ 更新本地状态，不 reload
+                        currentVoucherCode = data.code;
+                        currentVoucherDiscount = Number(data.discount || 0);
+
+                        showMsg('Voucher applied.', true);
+                        refreshAll();
+
+                    } catch (e) {
+                        showMsg('Network error. Please try again.', false);
+                    }
+                });
+            }
+
+            // ✅ Remove voucher (no reload)
+            if (btnRemoveVoucher) {
+                btnRemoveVoucher.addEventListener('click', async () => {
+                    try {
+                        const res = await fetch("{{ route('voucher.remove') }}", {
+                            method: "POST",
+                            headers: {
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Accept": "application/json",
+                            }
+                        });
+
+                        const data = await res.json().catch(() => null);
+
+                        if (!res.ok) {
+                            showMsg(data?.message || 'Failed to remove voucher.', false);
+                            return;
+                        }
+
+                        currentVoucherCode = '';
+                        currentVoucherDiscount = 0;
+
+                        showMsg('Voucher removed.', true);
+                        refreshAll();
+
+                    } catch (e) {
+                        showMsg('Network error. Please try again.', false);
+                    }
+                });
+            }
         });
     </script>
 
 
 
+    {{-- <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const msgEl = document.getElementById('voucherMsg');
+
+            function showMsg(text, ok = true) {
+                if (!msgEl) return;
+                msgEl.textContent = text;
+                msgEl.className = 'mt-3 text-xs font-bold rounded-xl px-3 py-2 ' + (ok ?
+                    'bg-green-50 text-green-700 border border-green-200' :
+                    'bg-red-50 text-red-700 border border-red-200');
+            }
+
+            // ✅ Apply Voucher (AJAX POST)
+            const applyBtn = document.getElementById('btnApplyVoucher');
+            if (applyBtn) {
+                applyBtn.addEventListener('click', async () => {
+                    const input = document.getElementById('voucherCodeInput');
+                    const code = (input?.value || '').trim();
+
+                    if (!code) {
+                        showMsg('Please enter a voucher code.', false);
+                        return;
+                    }
+
+                    try {
+                        const res = await fetch("{{ route('voucher.apply') }}", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Accept": "application/json",
+                            },
+                            body: JSON.stringify({
+                                code
+                            })
+                        });
+
+                        // 如果你的 controller 现在是 back()->with(...) 不是 JSON，
+                        // 这里仍然可以用：成功就 reload
+                        if (res.ok) {
+                            window.location.reload();
+                            return;
+                        }
+
+                        // 尝试读 JSON 错误
+                        let data = null;
+                        try {
+                            data = await res.json();
+                        } catch (e) {}
+
+                        const err = data?.message || 'Voucher apply failed.';
+                        showMsg(err, false);
+
+                    } catch (e) {
+                        showMsg('Network error. Please try again.', false);
+                    }
+                });
+            }
+
+            // ✅ Remove Voucher (AJAX POST)
+            const removeBtn = document.getElementById('btnRemoveVoucher');
+            if (removeBtn) {
+                removeBtn.addEventListener('click', async () => {
+                    try {
+                        const res = await fetch("{{ route('voucher.remove') }}", {
+                            method: "POST",
+                            headers: {
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Accept": "application/json",
+                            }
+                        });
+
+                        if (res.ok) {
+                            window.location.reload();
+                            return;
+                        }
+
+                        showMsg('Failed to remove voucher.', false);
+                    } catch (e) {
+                        showMsg('Network error. Please try again.', false);
+                    }
+                });
+            }
+        });
+    </script> --}}
 
 
 </x-app-layout>
