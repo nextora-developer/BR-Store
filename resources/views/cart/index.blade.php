@@ -15,8 +15,10 @@
                 $index = collect($steps)->search(fn($s) => $s['key'] === $step);
             @endphp
 
-            <div class="bg-white/80 backdrop-blur rounded-2xl border border-gray-100 shadow-sm px-6 py-4 mb-8">
-                <div class="flex items-center justify-between gap-3">
+            <div
+                class="bg-white/80 backdrop-blur rounded-2xl border border-gray-100 shadow-sm px-4 sm:px-6 py-3 sm:py-4 mb-6 sm:mb-8">
+                {{-- mobile: 纵向；sm+：横向 --}}
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
 
                     @foreach ($steps as $i => $s)
                         @php
@@ -25,13 +27,12 @@
                         @endphp
 
                         <div class="flex items-center flex-1 min-w-0">
-                            {{-- Circle --}}
-                            <div class="flex items-center gap-3">
+
+                            {{-- Circle + Label --}}
+                            <div class="flex items-center gap-3 min-w-0">
                                 <div
-                                    class="
-                        w-9 h-9 rounded-full grid place-items-center font-black text-sm
-                        {{ $isDone ? 'bg-[#D4AF37] text-white' : ($isNow ? 'bg-black text-white' : 'bg-gray-100 text-gray-400') }}
-                    ">
+                                    class="w-9 h-9 rounded-full grid place-items-center font-black text-sm flex-shrink-0
+                        {{ $isDone ? 'bg-[#D4AF37] text-white' : ($isNow ? 'bg-black text-white' : 'bg-gray-100 text-gray-400') }}">
                                     @if ($isDone)
                                         ✓
                                     @else
@@ -39,13 +40,10 @@
                                     @endif
                                 </div>
 
-                                {{-- Label --}}
-                                <div class="min-w-0">
+                                <div class="min-w-0 text-left">
                                     <div
-                                        class="
-                            text-sm font-extrabold truncate
-                            {{ $isNow ? 'text-gray-900' : ($isDone ? 'text-[#8f6a10]' : 'text-gray-400') }}
-                        ">
+                                        class="text-xs sm:text-sm font-extrabold truncate
+                            {{ $isNow ? 'text-gray-900' : ($isDone ? 'text-[#8f6a10]' : 'text-gray-400') }}">
                                         {{ $s['label'] }}
                                     </div>
 
@@ -57,10 +55,10 @@
                                 </div>
                             </div>
 
-                            {{-- Connector --}}
+                            {{-- Connector: 只在桌面显示 --}}
                             @if ($i < count($steps) - 1)
                                 <div
-                                    class="flex-1 h-px mx-4
+                                    class="hidden sm:block flex-1 h-px mx-4
                         {{ $isDone ? 'bg-[#D4AF37]/70' : 'bg-gray-200' }}">
                                 </div>
                             @endif
@@ -69,6 +67,7 @@
 
                 </div>
             </div>
+
 
 
             @if ($items->isEmpty())
