@@ -13,7 +13,8 @@
         <a href="{{ route('admin.banners.index') }}"
             class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white border border-gray-200
                    text-sm font-semibold text-gray-600 hover:bg-gray-50 transition shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
+                class="w-4 h-4">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
             </svg>
             <span>Back</span>
@@ -30,7 +31,7 @@
         @endif
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            
+
             {{-- Left Side: Main Content --}}
             <div class="lg:col-span-2 space-y-6">
                 <div>
@@ -48,7 +49,8 @@
                         </div>
 
                         <div>
-                            <label class="text-xs uppercase font-black tracking-widest text-gray-400">Destination URL</label>
+                            <label class="text-xs uppercase font-black tracking-widest text-gray-400">Destination
+                                URL</label>
                             <input name="link_url" value="{{ old('link_url', $banner->link_url) }}"
                                 class="mt-1.5 w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 font-medium"
                                 placeholder="e.g. /shop/towels">
@@ -58,19 +60,23 @@
 
                 {{-- Image Upload Zone --}}
                 <div class="border border-dashed border-gray-200 rounded-2xl p-6 bg-gray-50/50">
-                    <label class="text-xs uppercase font-black tracking-widest text-[#8f6a10] block mb-4">Creative Asset</label>
+                    <label class="text-xs uppercase font-black tracking-widest text-[#8f6a10] block mb-4">Creative
+                        Asset</label>
 
                     <div class="flex flex-col md:flex-row gap-6">
                         {{-- Preview Box --}}
-                        <div class="w-full md:w-64 aspect-[19/6] md:aspect-auto md:h-32 rounded-xl bg-white border border-gray-200 shadow-inner flex items-center justify-center overflow-hidden">
+                        <div
+                            class="w-full md:w-64 aspect-[19/6] md:aspect-auto md:h-32 rounded-xl bg-white border border-gray-200 shadow-inner flex items-center justify-center overflow-hidden">
                             <img id="bannerPreview"
                                 src="{{ $banner->image_path ? asset('storage/' . $banner->image_path) : '' }}"
-                                class="h-full w-full object-cover {{ $banner->image_path ? '' : 'hidden' }}"
-                                alt="Preview">
+                                class="h-full w-full object-cover {{ $banner->image_path ? '' : 'hidden' }}" alt="Preview">
 
-                            <div id="bannerPlaceholder" class="flex flex-col items-center gap-1 {{ $banner->image_path ? 'hidden' : '' }}">
-                                <svg class="h-8 w-8 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6.75a1.5 1.5 0 00-1.5-1.5H3.75a1.5 1.5 0 00-1.5 1.5v12.75a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                            <div id="bannerPlaceholder"
+                                class="flex flex-col items-center gap-1 {{ $banner->image_path ? 'hidden' : '' }}">
+                                <svg class="h-8 w-8 text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6.75a1.5 1.5 0 00-1.5-1.5H3.75a1.5 1.5 0 00-1.5 1.5v12.75a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
                                 </svg>
                                 <span class="text-[10px] font-bold text-gray-300 uppercase tracking-tighter">No Image</span>
                             </div>
@@ -86,7 +92,8 @@
                             </p>
 
                             <div class="mt-4 flex gap-2">
-                                <label class="px-4 py-2 rounded-lg bg-white border border-gray-300 text-xs font-bold text-gray-600 hover:bg-gray-50 cursor-pointer shadow-sm transition">
+                                <label
+                                    class="px-4 py-2 rounded-lg bg-white border border-gray-300 text-xs font-bold text-gray-600 hover:bg-gray-50 cursor-pointer shadow-sm transition">
                                     Select Image
                                     <input id="bannerInput" type="file" name="image" class="hidden" accept="image/*">
                                 </label>
@@ -110,7 +117,8 @@
 
                     <div class="space-y-4">
                         <div>
-                            <label class="text-xs uppercase font-black tracking-widest text-gray-400">Display Priority</label>
+                            <label class="text-xs uppercase font-black tracking-widest text-gray-400">Display
+                                Priority</label>
                             <input name="sort_order" value="{{ old('sort_order', $banner->sort_order ?? 0) }}"
                                 class="mt-1.5 w-full rounded-xl border-gray-200 focus:border-[#D4AF37] focus:ring-[#D4AF37]/30 font-medium"
                                 type="number" min="0">
@@ -127,7 +135,8 @@
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" name="is_active" value="1" class="sr-only peer"
                                         @checked(old('is_active', $banner->is_active ?? true))>
-                                    <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-[#D4AF37]
+                                    <div
+                                        class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-[#D4AF37]
                                                 after:content-[''] after:absolute after:top-[2px] after:left-[2px]
                                                 after:bg-white after:h-5 after:w-5 after:rounded-full
                                                 after:transition-all peer-checked:after:translate-x-full">
@@ -139,7 +148,8 @@
                 </div>
 
                 <div class="pt-4">
-                    <button type="submit" class="w-full mb-3 px-6 py-3 rounded-xl bg-[#D4AF37] text-white font-bold text-sm hover:bg-[#c29c2f] transition shadow-lg shadow-[#D4AF37]/20">
+                    <button type="submit"
+                        class="w-full mb-3 px-6 py-3 rounded-xl bg-[#D4AF37] text-white font-bold text-sm hover:bg-[#c29c2f] transition shadow-lg shadow-[#D4AF37]/20">
                         {{ $banner->exists ? 'Update Changes' : 'Publish Banner' }}
                     </button>
                     <a href="{{ route('admin.banners.index') }}"

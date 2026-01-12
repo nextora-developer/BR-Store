@@ -364,6 +364,74 @@
         </script>
     @endif
 
+    @if ($popupBanner)
+        <div id="popupBannerWrap" class="fixed inset-0 z-[9999] hidden items-center justify-center px-4">
+            <div class="absolute inset-0 bg-black/60"></div>
+
+            <div id="popupBannerCard"
+                class="relative w-full max-w-[520px] rounded-2xl overflow-hidden shadow-2xl border border-white/20
+                opacity-0 translate-y-3 scale-[0.98] transition-all duration-300">
+                <button id="popupBannerClose"
+                    class="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-white grid place-items-center shadow">
+                    ✕
+                </button>
+
+                <a href="{{ $popupBanner->link ?? '#' }}" class="block">
+                    <img src="{{ asset('storage/' . $popupBanner->image) }}" class="w-full h-auto block"
+                        alt="Popup Banner">
+                </a>
+            </div>
+        </div>
+
+        <script>
+            (function() {
+                const bannerId = "{{ $popupBanner->id }}";
+                const days = {{ (int) $popupBanner->cooldown_days }};
+                const key = "popup_banner_next_" + bannerId;
+
+                const wrap = document.getElementById("popupBannerWrap");
+                const card = document.getElementById("popupBannerCard");
+                const btn = document.getElementById("popupBannerClose");
+                if (!wrap || !card || !btn) return;
+
+                const now = Date.now();
+                const next = parseInt(localStorage.getItem(key) || "0", 10);
+
+                function openPopup() {
+                    wrap.classList.remove("hidden");
+                    wrap.classList.add("flex");
+                    requestAnimationFrame(() => {
+                        card.classList.remove("opacity-0", "translate-y-3", "scale-[0.98]");
+                        card.classList.add("opacity-100", "translate-y-0", "scale-100");
+                    });
+                }
+
+                function closePopup() {
+                    card.classList.remove("opacity-100", "translate-y-0", "scale-100");
+                    card.classList.add("opacity-0", "translate-y-3", "scale-[0.98]");
+
+                    const cooldown = now + (days * 24 * 60 * 60 * 1000);
+                    localStorage.setItem(key, String(cooldown));
+
+                    setTimeout(() => {
+                        wrap.remove();
+                    }, 200);
+                }
+
+                if (!next || now >= next) openPopup();
+
+                btn.addEventListener("click", closePopup);
+                wrap.addEventListener("click", (e) => {
+                    if (e.target === wrap) closePopup();
+                });
+                document.addEventListener("keydown", (e) => {
+                    if (e.key === "Escape") closePopup();
+                });
+            })();
+        </script>
+    @endif
+
+
     @stack('scripts')
 </body>
 

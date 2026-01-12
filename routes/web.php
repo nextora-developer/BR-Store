@@ -20,6 +20,7 @@ use App\Http\Controllers\Admin\AdminBannerController;
 use App\Http\Controllers\Admin\AdminPaymentMethodController;
 use App\Http\Controllers\Admin\AdminShippingController;
 use App\Http\Controllers\Admin\AdminVoucherController;
+use App\Http\Controllers\Admin\AdminPopupBannerController;
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountOrderController;
@@ -238,6 +239,16 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::resource('/vouchers', AdminVoucherController::class)->except(['show']);
     Route::post('/vouchers/{voucher}/toggle', [AdminVoucherController::class, 'toggle'])->name('vouchers.toggle');
     Route::delete('/vouchers/{voucher}', [AdminVoucherController::class, 'destroy'])->name('vouchers.destroy');
+
+    // Pop Up Banner
+    Route::get('popup-banners', [AdminPopupBannerController::class, 'index'])->name('popup-banners.index');
+    Route::get('popup-banners/create', [AdminPopupBannerController::class, 'create'])->name('popup-banners.create');
+    Route::post('popup-banners', [AdminPopupBannerController::class, 'store'])->name('popup-banners.store');
+    Route::get('popup-banners/{popup_banner}/edit', [AdminPopupBannerController::class, 'edit'])->name('popup-banners.edit');
+    Route::put('popup-banners/{popup_banner}', [AdminPopupBannerController::class, 'update'])->name('popup-banners.update');
+    Route::delete('popup-banners/{popup_banner}', [AdminPopupBannerController::class, 'destroy'])->name('popup-banners.destroy');
+
+    Route::post('popup-banners/{popup_banner}/toggle', [AdminPopupBannerController::class, 'toggle'])->name('popup-banners.toggle');
 });
 
 /*
