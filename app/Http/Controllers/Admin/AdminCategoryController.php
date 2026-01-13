@@ -25,6 +25,16 @@ class AdminCategoryController extends Controller
             $q->where('is_active', $request->status === 'active');
         }
 
+        if ($request->filled('parent')) {
+            $q->where('parent_id', $request->parent);
+        }
+
+        $parents = Category::whereNull('parent_id')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+
+
         $q->withCount('products')
             ->withCount('children')
             ->with('parent');
@@ -37,7 +47,7 @@ class AdminCategoryController extends Controller
             ->withQueryString();
 
 
-        return view('admin.categories.index', compact('categories'));
+        return view('admin.categories.index', compact('categories', 'parents'));
     }
 
     public function create()

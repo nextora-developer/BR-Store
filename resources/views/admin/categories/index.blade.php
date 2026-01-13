@@ -30,6 +30,17 @@
             </div>
 
             <div class="flex gap-3">
+                <select name="parent"
+                    class="min-w-[160px] py-2.5 bg-gray-50 border-transparent rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] transition-all">
+                    <option value="">All Parents</option>
+
+                    @foreach ($parents ?? [] as $parent)
+                        <option value="{{ $parent->id }}" @selected(request('parent') == $parent->id)>
+                            {{ $parent->name }}
+                        </option>
+                    @endforeach
+                </select>
+
                 <select name="status"
                     class="min-w-[120px] py-2.5 bg-gray-50 border-transparent rounded-xl text-sm focus:bg-white focus:ring-2 focus:ring-[#D4AF37]/20 focus:border-[#D4AF37] transition-all">
                     <option value="">All Status</option>
