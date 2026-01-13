@@ -14,7 +14,8 @@
 
             <div class="space-y-5">
                 <div>
-                    <label for="name" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2 ml-1">
+                    <label for="name"
+                        class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2 ml-1">
                         Full Name
                     </label>
                     <input id="name" type="text" name="name" value="{{ old('name') }}" required autofocus
@@ -26,7 +27,8 @@
                 </div>
 
                 <div>
-                    <label for="email" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2 ml-1">
+                    <label for="email"
+                        class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2 ml-1">
                         Email Address
                     </label>
                     <input id="email" type="email" name="email" value="{{ old('email') }}" required
@@ -39,7 +41,8 @@
 
                 <div class="grid grid-cols-1 gap-5">
                     <div>
-                        <label for="password" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2 ml-1">
+                        <label for="password"
+                            class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2 ml-1">
                             Password
                         </label>
                         <input id="password" type="password" name="password" required autocomplete="new-password"
@@ -51,7 +54,8 @@
                     </div>
 
                     <div>
-                        <label for="password_confirmation" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2 ml-1">
+                        <label for="password_confirmation"
+                            class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2 ml-1">
                             Confirm Password
                         </label>
                         <input id="password_confirmation" type="password" name="password_confirmation" required
@@ -60,6 +64,28 @@
                     </div>
                 </div>
             </div>
+
+            {{-- Referral Code (optional) --}}
+            <div class="mt-6">
+                <label for="ref" class="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2 ml-1">
+                    Referral Code <span class="text-gray-400 normal-case font-medium">(optional)</span>
+                </label>
+
+                <input id="ref" type="text" name="ref" value="{{ old('ref', request('ref')) }}"
+                    placeholder="Enter referral code" autocomplete="off"
+                    class="w-full px-4 py-3 rounded-xl
+               border border-gray-200
+               focus:border-[#D4AF37]
+               focus:ring-4 focus:ring-[#D4AF37]/10
+               transition-all duration-200
+               outline-none text-gray-800" />
+
+                @error('ref')
+                    <p class="text-xs text-red-500 mt-1.5 ml-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+
 
             <div class="mt-8 space-y-4">
                 <button type="submit"
@@ -76,7 +102,8 @@
             <div class="mt-8 text-center">
                 <p class="text-sm text-gray-600">
                     Already have an account?
-                    <a href="{{ route('login') }}" class="text-[#8f6a10] font-bold hover:text-[#D4AF37] transition-colors">
+                    <a href="{{ route('login') }}"
+                        class="text-[#8f6a10] font-bold hover:text-[#D4AF37] transition-colors">
                         Sign in instead
                     </a>
                 </p>

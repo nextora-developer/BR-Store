@@ -4,6 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\ReferralLog;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -33,21 +36,42 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+            'ref' => ['nullable', 'string', 'max:20', 'exists:users,referral_code'],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        $refCode = strtoupper(trim((string) $request->input('ref', '')));
+
+        // 找上级（referrer）
+        $referrer = null;
+        if ($refCode !== '') {
+            $referrer = User::where('referral_code', $refCode)->first();
+        }
+
+        $user = DB::transaction(function () use ($request, $referrer) {
+
+            $newUser = User::create([
+                'name' => $request->name,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+
+                // under 谁
+                'referred_by' => $referrer?->id,
+            ]);
+
+            // 写 referral log（以后做 reward/cashback 用）
+            if ($referrer) {
+                ReferralLog::firstOrCreate([
+                    'referrer_id' => $referrer->id,
+                    'referred_user_id' => $newUser->id,
+                ]);
+            }
+
+            return $newUser;
+        });
 
         event(new Registered($user));
 
-        // Auth::login($user);
-
-        // dd('register ok, going to login');
-
         return redirect()->route('login')
-            ->with('status', '注册成功，请先登录你的账号。');
+            ->with('status', 'Register successfully, Please login your account');
     }
 }

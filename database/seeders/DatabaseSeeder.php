@@ -3,22 +3,18 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
-
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
         // Admin user
-        User::updateOrCreate(
+        $admin = User::updateOrCreate(
             ['email' => 'admin@brif.my'],
             [
                 'name'     => 'Admin',
@@ -27,8 +23,14 @@ class DatabaseSeeder extends Seeder
             ]
         );
 
-        // Normal customer（不用 factory 也行）
-        User::updateOrCreate(
+        // 确保 admin 有 referral_code
+        if (empty($admin->referral_code)) {
+            $admin->referral_code = User::generateReferralCode();
+            $admin->save();
+        }
+
+        // Normal customer
+        $user = User::updateOrCreate(
             ['email' => 'user@user.com'],
             [
                 'name'     => 'User',
@@ -36,6 +38,12 @@ class DatabaseSeeder extends Seeder
                 'is_admin' => false,
             ]
         );
+
+        // 确保 user 有 referral_code
+        if (empty($user->referral_code)) {
+            $user->referral_code = User::generateReferralCode();
+            $user->save();
+        }
 
         $this->call([
             CategorySeeder::class,

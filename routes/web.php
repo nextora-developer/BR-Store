@@ -27,6 +27,8 @@ use App\Http\Controllers\AccountOrderController;
 use App\Http\Controllers\AccountAddressController;
 use App\Http\Controllers\AccountProfileController;
 use App\Http\Controllers\AccountFavoriteController;
+use App\Http\Controllers\AccountReferralController;
+
 
 use App\Http\Controllers\HitpayController;
 
@@ -149,6 +151,10 @@ Route::middleware('auth')->group(function () {
         Route::delete('/favorites/{product}', [AccountFavoriteController::class, 'destroy'])
             ->middleware('auth')
             ->name('favorites.destroy');
+
+        // Referral
+        Route::get('/referral', [AccountReferralController::class, 'index'])
+            ->name('referral.index');
     });
 });
 

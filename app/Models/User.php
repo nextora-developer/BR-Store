@@ -6,6 +6,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\UserAddress;
+use Illuminate\Support\Str;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
@@ -28,6 +29,8 @@ class User extends Authenticatable
         'birth_date',
         'ic_image',
         'is_verified',
+        'referral_code',
+        'referred_by',
     ];
 
     /**
@@ -58,6 +61,26 @@ class User extends Authenticatable
 
         ];
     }
+
+    protected static function booted()
+    {
+        static::creating(function ($user) {
+            if (empty($user->referral_code)) {
+                $user->referral_code = static::generateReferralCode();
+            }
+        });
+    }
+
+    public static function generateReferralCode(): string
+    {
+        do {
+            // 8位大写字母数字，够用也不容易撞
+            $code = strtoupper(Str::random(8));
+        } while (static::where('referral_code', $code)->exists());
+
+        return $code;
+    }
+
 
     public function addresses()
     {
