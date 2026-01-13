@@ -18,7 +18,7 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
-                <aside class="lg:col-span-1">
+                <aside class="hidden lg:block lg:col-span-1">
                     @include('account.partials.sidebar')
                 </aside>
 

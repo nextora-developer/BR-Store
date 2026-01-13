@@ -6,8 +6,8 @@
         <div class="flex flex-col sm:flex-row items-baseline justify-between gap-4 mb-10 lg:mb-12">
             <div class="space-y-2">
 
-                <h2 class="text-3xl sm:text-4xl font-light text-black tracking-tight leading-none">
-                    New <span class="font-serif italic text-black/70">Arrivals</span>
+                <h2 class="text-3xl sm:text-3xl font-bold text-black">
+                    New Arrivals
                 </h2>
 
                 <p class="text-sm md:text-base text-black/40 max-w-md font-medium leading-relaxed">
