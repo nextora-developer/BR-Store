@@ -201,6 +201,9 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
         ->name('addresses.create');
     Route::post('users/{user}/addresses', [AdminAddressController::class, 'store'])
         ->name('addresses.store');
+    Route::post('users/{user}/points/adjust', [AdminUserController::class, 'adjustPoints'])->name('users.points.adjust');
+    Route::get('users/{user}/referrals', [AdminUserController::class, 'referrals'])->name('users.referrals');
+
 
     Route::get('addresses/{address}/edit', [AdminAddressController::class, 'edit'])
         ->name('addresses.edit');

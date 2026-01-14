@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Order;
+use App\Models\PointTransaction;
+use App\Models\ReferralLog;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
-
+use Illuminate\Support\Facades\DB;
 
 class AdminUserController extends Controller
 {
@@ -56,16 +58,37 @@ class AdminUserController extends Controller
 
     public function show(User $user)
     {
-        $user->load('addresses', 'defaultAddress');
+        $user->load('addresses', 'defaultAddress', 'referrer:id,name,email');
 
-        // 最近 5 张订单（根据你自己的关联/字段名微调）
+        $pointsBalance = (int) ($user->points_balance ?? 0);
+
+        $invitedCount = User::where('referred_by', $user->id)->count();
+
+        $referralEarned = (int) PointTransaction::where('user_id', $user->id)
+            ->where('source', 'referral')
+            ->where('type', 'earn')
+            ->sum('points');
+
+        $recentPoints = PointTransaction::with(['order:id,order_no'])
+            ->where('user_id', $user->id)
+            ->latest()
+            ->limit(10)
+            ->get();
+
         $recentOrders = Order::where('user_id', $user->id)
             ->latest()
-            ->withCount('items')   // 如果你有 items 关联
+            ->withCount('items')
             ->take(7)
             ->get();
 
-        return view('admin.users.show', compact('user', 'recentOrders'));
+        return view('admin.users.show', compact(
+            'user',
+            'recentOrders',
+            'pointsBalance',
+            'invitedCount',
+            'referralEarned',
+            'recentPoints'
+        ));
     }
 
     public function edit(User $user)
@@ -131,5 +154,44 @@ class AdminUserController extends Controller
         return redirect()
             ->route('admin.users.show', $user)
             ->with('success', 'User updated successfully.');
+    }
+
+    public function adjustPoints(Request $request, \App\Models\User $user)
+    {
+        $data = $request->validate([
+            'action' => 'required|in:add,deduct',
+            'points' => 'required|integer|min:1',
+            'note'   => 'nullable|string|max:255',
+        ]);
+
+        DB::transaction(function () use ($data, $user) {
+            $user = \App\Models\User::whereKey($user->id)->lockForUpdate()->first();
+
+            $points = (int) $data['points'];
+            $isDeduct = $data['action'] === 'deduct';
+
+            // ✅ 防止扣到负数
+            if ($isDeduct && (int)($user->points_balance ?? 0) < $points) {
+                throw \Illuminate\Validation\ValidationException::withMessages([
+                    'points' => 'Insufficient points balance to deduct.',
+                ]);
+            }
+
+            PointTransaction::create([
+                'user_id' => $user->id,
+                'type'    => $isDeduct ? 'spend' : 'earn',
+                'source'  => 'admin_adjust',
+                'points'  => $points,
+                'note'    => $data['note'] ?: ($isDeduct ? 'Admin deducted points' : 'Admin added points'),
+            ]);
+
+            if ($isDeduct) {
+                $user->decrement('points_balance', $points);
+            } else {
+                $user->increment('points_balance', $points);
+            }
+        });
+
+        return back()->with('success', 'Points updated successfully.');
     }
 }
