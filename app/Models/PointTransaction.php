@@ -21,13 +21,18 @@ class PointTransaction extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function referralLog()
-    {
-        return $this->belongsTo(ReferralLog::class);
-    }
-
     public function order()
     {
         return $this->belongsTo(Order::class);
+    }
+
+    public function referrer()
+    {
+        return $this->belongsTo(User::class, 'referred_by');
+    }
+
+    public function referralLog()
+    {
+        return $this->belongsTo(ReferralLog::class, 'referral_log_id');
     }
 }

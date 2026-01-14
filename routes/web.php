@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\AdminPaymentMethodController;
 use App\Http\Controllers\Admin\AdminShippingController;
 use App\Http\Controllers\Admin\AdminVoucherController;
 use App\Http\Controllers\Admin\AdminPopupBannerController;
+use App\Http\Controllers\Admin\AdminPointTransactionController;
 
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\AccountOrderController;
@@ -28,7 +29,6 @@ use App\Http\Controllers\AccountAddressController;
 use App\Http\Controllers\AccountProfileController;
 use App\Http\Controllers\AccountFavoriteController;
 use App\Http\Controllers\AccountReferralController;
-
 
 use App\Http\Controllers\HitpayController;
 
@@ -246,8 +246,11 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
     Route::get('popup-banners/{popup_banner}/edit', [AdminPopupBannerController::class, 'edit'])->name('popup-banners.edit');
     Route::put('popup-banners/{popup_banner}', [AdminPopupBannerController::class, 'update'])->name('popup-banners.update');
     Route::delete('popup-banners/{popup_banner}', [AdminPopupBannerController::class, 'destroy'])->name('popup-banners.destroy');
-
     Route::post('popup-banners/{popup_banner}/toggle', [AdminPopupBannerController::class, 'toggle'])->name('popup-banners.toggle');
+
+    // Point Transaction
+    Route::get('/points', [AdminPointTransactionController::class, 'index'])->name('points.index');
+    Route::get('/points/{pointTransaction}', [AdminPointTransactionController::class, 'show'])->name('points.show');
 });
 
 /*

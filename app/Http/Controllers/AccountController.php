@@ -23,9 +23,9 @@ class AccountController extends Controller
         $stats['points'] = (int) ($user->points_balance ?? 0);
 
         $pointTransactions = PointTransaction::where('user_id', $user->id)
-            ->whereIn('source', ['purchase', 'redeem']) // ✅ 只看 cashback + redeem
+            ->whereIn('source', ['purchase', 'redeem'])
             ->latest()
-            ->limit(10)
+            ->limit(5)
             ->get();
 
 

@@ -216,7 +216,7 @@
                         <div class="flex items-center justify-between mb-5 px-2 mt-10">
                             <h2 class="text-lg font-bold text-gray-900 flex items-center gap-2">
                                 <span class="w-1.5 h-6 bg-[#D4AF37] rounded-full"></span>
-                                Points History
+                                Referral Points History
                             </h2>
                         </div>
 
