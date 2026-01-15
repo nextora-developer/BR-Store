@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
-use Illuminate\Http\Request;
 use App\Models\ProductOption;
 use App\Models\ProductOptionValue;
 use App\Models\ProductImage;
+use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Storage;
 
@@ -525,5 +526,39 @@ class AdminProductController extends Controller
         ]);
 
         return back()->with('success', 'Product status updated.');
+    }
+
+    public function duplicate(Product $product)
+    {
+        DB::transaction(function () use ($product) {
+
+            // 1️⃣ 复制主产品
+            $new = $product->replicate([
+                'slug',
+                'created_at',
+                'updated_at',
+            ]);
+
+            $new->name = $product->name . ' (Copy)';
+            $new->slug = Str::slug($new->name) . '-' . Str::random(4);
+            $new->is_active = false; // 复制后默认隐藏更安全
+            $new->save();
+
+            // 2️⃣ 复制 variants（如果有）
+            if ($product->variants()->exists()) {
+                foreach ($product->variants as $variant) {
+                    $new->variants()->create(
+                        $variant->replicate([
+                            'id',
+                            'product_id',
+                            'created_at',
+                            'updated_at',
+                        ])->toArray()
+                    );
+                }
+            }
+        });
+
+        return back()->with('success', 'Product duplicated successfully');
     }
 }
