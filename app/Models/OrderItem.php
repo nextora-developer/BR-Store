@@ -13,8 +13,8 @@ class OrderItem extends Model
         'product_name',
         'qty',
         'unit_price',
-        'product_variant_id',   // ⭐ 新增
-        'variant_label',        // ⭐ 新增
+        'product_variant_id',
+        'variant_label',
     ];
 
     public function order(): BelongsTo
@@ -32,9 +32,13 @@ class OrderItem extends Model
         return $this->belongsTo(ProductVariant::class, 'product_variant_id');
     }
 
-    // 可选：给 Blade 用 $item->subtotal
     public function getSubtotalAttribute()
     {
         return $this->qty * $this->unit_price;
+    }
+
+    public function review()
+    {
+        return $this->hasOne(ProductReview::class, 'order_item_id');
     }
 }

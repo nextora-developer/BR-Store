@@ -29,6 +29,8 @@ use App\Http\Controllers\AccountAddressController;
 use App\Http\Controllers\AccountProfileController;
 use App\Http\Controllers\AccountFavoriteController;
 use App\Http\Controllers\AccountReferralController;
+use App\Http\Controllers\AccountReviewController;
+use App\Http\Controllers\ProductReviewController;
 
 use App\Http\Controllers\HitpayController;
 
@@ -155,6 +157,10 @@ Route::middleware('auth')->group(function () {
         // Referral
         Route::get('/referral', [AccountReferralController::class, 'index'])
             ->name('referral.index');
+
+        // Review
+        Route::get('/reviews', [AccountReviewController::class, 'index'])->name('reviews.index');
+        Route::post('/reviews/{item}', [ProductReviewController::class, 'store'])->name('reviews.store');
     });
 });
 

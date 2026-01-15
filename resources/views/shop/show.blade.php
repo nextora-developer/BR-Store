@@ -65,11 +65,11 @@
                                                 viewBox="0 0 24 24" class="h-6 w-6">
                                                 <path
                                                     d="M12 21.35l-1.45-1.32C5.4 15.36
-                                                                                                                                                                               2 12.28 2 8.5 2 5.42 4.42
-                                                                                                                                                                               3 7.5 3c1.74 0 3.41.81 4.5
-                                                                                                                                                                               2.09C13.09 3.81 14.76 3 16.5
-                                                                                                                                                                               3 19.58 3 22 5.42 22 8.5c0
-                                                                                                                                                                               3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+                                                                                                                                                                                                                           2 12.28 2 8.5 2 5.42 4.42
+                                                                                                                                                                                                                           3 7.5 3c1.74 0 3.41.81 4.5
+                                                                                                                                                                                                                           2.09C13.09 3.81 14.76 3 16.5
+                                                                                                                                                                                                                           3 19.58 3 22 5.42 22 8.5c0
+                                                                                                                                                                                                                           3.78-3.4 6.86-8.55 11.54L12 21.35z" />
                                             </svg>
                                         </button>
                                     </form>
@@ -435,16 +435,44 @@
                     class="bg-white rounded-[2rem] border border-gray-100 shadow-[0_18px_40px_rgba(0,0,0,0.04)] p-6 sm:p-8">
 
                     {{-- Tabs Header --}}
-                    <div class="flex justify-center gap-12 border-b border-gray-100 mb-8">
+                    <div class="flex justify-center gap-6 sm:gap-12 border-b border-gray-100 mb-8">
                         <button onclick="switchTab('desc')" id="tab-btn-desc"
-                            class="pb-4 text-sm font-bold uppercase tracking-widest border-b-2 border-[#D4AF37] text-gray-900">
+                            class="pb-3 sm:pb-4
+               text-[11px] sm:text-sm
+               font-bold uppercase tracking-widest
+               text-center leading-tight
+               max-w-[80px] sm:max-w-none
+               border-b-2 border-[#D4AF37]
+               text-gray-900">
                             Long Description
                         </button>
+
                         <button onclick="switchTab('info')" id="tab-btn-info"
-                            class="pb-4 text-sm font-bold uppercase tracking-widest border-b-2 border-transparent text-gray-400 hover:text-gray-900 transition">
+                            class="pb-3 sm:pb-4
+               text-[11px] sm:text-sm
+               font-bold uppercase tracking-widest
+               text-center leading-tight
+               max-w-[80px] sm:max-w-none
+               border-b-2 border-transparent
+               text-gray-400 hover:text-gray-900 transition">
                             Additional Info
                         </button>
+
+                        <button onclick="switchTab('review')" id="tab-btn-review"
+                            class="pb-3 sm:pb-4
+               text-[11px] sm:text-sm
+               font-bold uppercase tracking-widest
+               text-center leading-tight
+               max-w-[80px] sm:max-w-none
+               border-b-2 border-transparent
+               text-gray-400 hover:text-gray-900 transition">
+                            Reviews
+                            <span class="ml-1 text-[10px] sm:text-[11px] font-black text-gray-300">
+                                ({{ $reviewCount ?? 0 }})
+                            </span>
+                        </button>
                     </div>
+
 
                     {{-- Description Tab --}}
                     <div id="tab-desc" class="prose prose-base max-w-none text-gray-600 leading-relaxed">
@@ -488,10 +516,101 @@
                         @endif
                     </div>
 
+                    {{-- Review Tab --}}
+                    <div id="tab-review" class="hidden">
+                        <div
+                            class="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-8 pb-6 border-b border-gray-100">
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-900">Customer Feedback</h3>
+                                <div class="flex items-center gap-4 mt-2">
+                                    <div class="text-4xl font-light text-gray-900 leading-none">
+                                        {{ number_format($avgRating ?? 0, 1) }}
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center gap-0.5 text-[#D4AF37] text-lg leading-none">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                <span
+                                                    class="{{ $i <= round($avgRating ?? 0) ? '' : 'text-gray-200' }}">★</span>
+                                            @endfor
+                                        </div>
+                                        <p class="text-xs font-medium text-gray-500 mt-1 uppercase tracking-wider">
+                                            Based on {{ $reviewCount ?? 0 }}
+                                            {{ Str::plural('review', $reviewCount ?? 0) }}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="hidden sm:block">
+                                <span
+                                    class="text-[10px] inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-green-50 text-green-700 font-bold uppercase tracking-widest border border-green-100">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                                    100% Verified Purchases
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            @forelse ($reviews as $review)
+                                <div class="group relative bg-white transition-all">
+                                    <div class="flex items-start gap-4">
+                                        <div
+                                            class="flex-shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-400 font-bold text-xs border border-gray-50">
+                                            {{ strtoupper(substr($review->user->name ?? 'C', 0, 1)) }}
+                                        </div>
+
+                                        <div class="flex-1">
+                                            <div class="flex items-center justify-between mb-1">
+                                                <h4 class="text-sm font-bold text-gray-900">
+                                                    {{ \Illuminate\Support\Str::limit($review->user->name ?? 'Customer', 18) }}
+                                                </h4>
+                                                <span class="text-xs text-gray-400">
+                                                    {{ $review->created_at->format('d M Y') }}
+                                                </span>
+                                            </div>
+
+                                            <div class="flex items-center gap-2 mb-3">
+                                                <div class="flex items-center gap-0.5 text-[#D4AF37] text-xs">
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        <span>{{ $i <= $review->rating ? '★' : '☆' }}</span>
+                                                    @endfor
+                                                </div>
+                                                <span
+                                                    class="text-[9px] font-black text-[#8f6a10] uppercase tracking-tighter bg-[#FCFAF6] px-1.5 py-0.5 rounded border border-[#D4AF37]/20">
+                                                    Verified
+                                                </span>
+                                            </div>
+
+                                            <p class="text-sm text-gray-600 leading-relaxed">
+                                                "{{ $review->comment ?: 'No comment provided.' }}"
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    @if (!$loop->last)
+                                        <div class="mt-6 border-b border-gray-50"></div>
+                                    @endif
+                                </div>
+                            @empty
+                                <div
+                                    class="py-12 text-center rounded-3xl bg-gray-50 border-2 border-dashed border-gray-100">
+                                    <div class="text-gray-300 mb-3 text-4xl">★</div>
+                                    <p class="text-sm text-gray-500 font-medium">No reviews yet.</p>
+                                    <p class="text-xs text-gray-400 mt-1">Be the first to share your thoughts after
+                                        purchase!</p>
+                                </div>
+                            @endforelse
+                        </div>
+
+                        @if ($reviews->hasPages())
+                            <div class="mt-10 pt-6 border-t border-gray-100">
+                                {{ $reviews->links() }}
+                            </div>
+                        @endif
+                    </div>
 
                 </div>
             </div>
-
 
             {{-- Related Products --}}
             @if ($related->count())
@@ -846,35 +965,39 @@
 
     <script>
         function switchTab(tab) {
-            const desc = document.getElementById('tab-desc');
-            const info = document.getElementById('tab-info');
-            const btnDesc = document.getElementById('tab-btn-desc');
-            const btnInfo = document.getElementById('tab-btn-info');
+            const tabs = {
+                desc: document.getElementById('tab-desc'),
+                info: document.getElementById('tab-info'),
+                review: document.getElementById('tab-review'),
+            };
 
-            if (!desc || !info || !btnDesc || !btnInfo) return;
+            const btns = {
+                desc: document.getElementById('tab-btn-desc'),
+                info: document.getElementById('tab-btn-info'),
+                review: document.getElementById('tab-btn-review'),
+            };
 
-            if (tab === 'desc') {
-                // 显示 Long Description
-                desc.classList.remove('hidden');
-                info.classList.add('hidden');
+            // safety
+            if (!tabs.desc || !tabs.info || !tabs.review) return;
 
-                // 按钮样式
-                btnDesc.classList.add('text-gray-700', 'border-[#D4AF37]');
-                btnDesc.classList.remove('text-gray-500', 'border-transparent');
+            // hide all
+            Object.values(tabs).forEach(el => el.classList.add('hidden'));
 
-                btnInfo.classList.add('text-gray-500', 'border-transparent');
-                btnInfo.classList.remove('text-gray-700', 'border-[#D4AF37]');
-            } else if (tab === 'info') {
-                // 显示 Additional Info
-                info.classList.remove('hidden');
-                desc.classList.add('hidden');
+            // reset btn style
+            Object.values(btns).forEach(btn => {
+                if (!btn) return;
+                btn.classList.add('text-gray-400', 'border-transparent');
+                btn.classList.remove('text-gray-700', 'border-[#D4AF37]', 'text-gray-900');
+            });
 
-                // 按钮样式
-                btnInfo.classList.add('text-gray-700', 'border-[#D4AF37]');
-                btnInfo.classList.remove('text-gray-500', 'border-transparent');
+            // show selected
+            tabs[tab]?.classList.remove('hidden');
 
-                btnDesc.classList.add('text-gray-500', 'border-transparent');
-                btnDesc.classList.remove('text-gray-700', 'border-[#D4AF37]');
+            // active btn
+            const b = btns[tab];
+            if (b) {
+                b.classList.add('text-gray-900', 'border-[#D4AF37]');
+                b.classList.remove('text-gray-400', 'border-transparent');
             }
         }
     </script>

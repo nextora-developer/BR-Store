@@ -61,4 +61,21 @@ class Product extends Model
     {
         return $this->hasMany(Favorite::class);
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(\App\Models\ProductReview::class)
+            ->where('is_visible', true);
+    }
+
+    public function avgRating(): float
+    {
+        $avg = $this->reviews()->avg('rating');
+        return $avg ? round((float)$avg, 1) : 0.0;
+    }
+
+    public function reviewCount(): int
+    {
+        return (int)$this->reviews()->count();
+    }
 }

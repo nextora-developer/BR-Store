@@ -40,6 +40,6 @@ class VoucherPageController extends Controller
                 ->toArray();
         }
 
-        return view('shop.vouchers.index', compact('vouchers', 'usedIds'));
+        return view('pages.vouchers.index', compact('vouchers', 'usedIds'));
     }
 }

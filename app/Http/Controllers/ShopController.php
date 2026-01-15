@@ -97,7 +97,7 @@ class ShopController extends Controller
         }
 
         $products = $query->paginate(15);
-        
+
         $categories = Category::where('is_active', true)
             ->whereNull('parent_id')
             ->with(['children' => function ($q) {
@@ -122,6 +122,15 @@ class ShopController extends Controller
             'variants' => fn($q) => $q->where('is_active', true),
         ]);
 
+        $reviews = $product->reviews()
+            ->with('user:id,name')
+            ->latest()
+            ->paginate(6);
+
+        $avgRating = round($product->reviews()->avg('rating') ?? 0, 1);
+        $reviewCount = $product->reviews()->count();
+
+
         $related = Product::where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('is_active', true) // ✅ 只拿 active
@@ -130,6 +139,6 @@ class ShopController extends Controller
             ->get();
 
 
-        return view('shop.show', compact('product', 'related'));
+        return view('shop.show', compact('product','related','reviews','avgRating','reviewCount'));
     }
 }
