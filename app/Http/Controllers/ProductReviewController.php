@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrderItem;
+use App\Models\PointTransaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -12,10 +13,7 @@ class ProductReviewController extends Controller
     {
         $user = $request->user();
 
-        // ✅ 只能 review 自己的 item
         abort_unless($item->order->user_id === $user->id, 403);
-
-        // ✅ 订单必须 completed
         abort_unless($item->order->status === 'completed', 403);
 
         $data = $request->validate([
@@ -23,16 +21,15 @@ class ProductReviewController extends Controller
             'comment' => 'nullable|string|max:1000',
         ]);
 
-        // ✅ 先挡一次（DB unique 也会挡）
         if ($item->review()->exists()) {
             return back()->with('status', 'You already reviewed this item.');
         }
 
-        // ✅ points 规则：固定 20（你要改就改这里）
         $points = 20;
 
         DB::transaction(function () use ($user, $item, $data, $points) {
-            $item->review()->create([
+
+            $review = $item->review()->create([
                 'user_id'        => $user->id,
                 'product_id'     => $item->product_id,
                 'rating'         => $data['rating'],
@@ -42,10 +39,36 @@ class ProductReviewController extends Controller
                 'is_visible'     => true,
             ]);
 
-            // ✅ 直接加到 balance（你如果有 points log，可以在这里顺便写）
-            $user->increment('points_balance', $points);
+            // ✅ 现在唯一规则是 (source, order_item_id, user_id)
+            $exists = PointTransaction::where('user_id', $user->id)
+                ->where('type', 'earn')
+                ->where('source', 'review')
+                ->where('order_item_id', $item->id)
+                ->exists();
+
+            if (!$exists) {
+                PointTransaction::create([
+                    'user_id'        => $user->id,
+                    'type'           => 'earn',
+                    'source'         => 'review',
+                    'referral_log_id' => null,
+                    'order_id'       => $item->order_id,  // ✅ 保留，方便统计按订单
+                    'order_item_id'  => $item->id,        // ✅ 新增
+                    'points'         => $points,
+                    'note'           => "Product review +{$points} pts (OrderItem #{$item->id})",
+                ]);
+
+                if (isset($user->points_balance)) {
+                    $user->increment('points_balance', $points);
+                }
+            }
         });
 
-        return back()->with('status', "Review submitted! +{$points} pts");
+
+        return back()->with('review_success', [
+            'points' => $points,
+            'title'  => 'Review submitted',
+            'text'   => 'Thanks for your feedback!',
+        ]);
     }
 }

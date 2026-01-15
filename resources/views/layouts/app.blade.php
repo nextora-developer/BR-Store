@@ -451,6 +451,98 @@
         </script>
     @endif
 
+    @if (session('review_success'))
+        @php
+            $rev = session('review_success');
+            $revTitle = $rev['title'] ?? 'Review submitted';
+            $revText = $rev['text'] ?? 'Thanks for your feedback!';
+            $revPts = (int) ($rev['points'] ?? 0);
+        @endphp
+
+        <div id="reviewSuccessOverlay" class="fixed inset-0 z-[9999] flex items-center justify-center">
+            {{-- 背景遮罩 --}}
+            <div class="absolute inset-0 bg-black/40" onclick="closeReviewSuccess()"></div>
+
+            {{-- 中间提示卡 --}}
+            <div
+                class="relative bg-white rounded-3xl shadow-2xl px-8 py-6 w-[90%] max-w-sm text-center
+                   animate-[fadeInUp_.25s_ease-out]">
+
+                <div
+                    class="mx-auto mb-4 w-14 h-14 rounded-full
+                       bg-[#D4AF37]/15 flex items-center justify-center">
+                    <svg class="w-7 h-7 text-[#8f6a10]" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                </div>
+
+                <h3 class="text-lg font-bold text-gray-900 mb-1">
+                    {{ $revTitle }}
+                </h3>
+
+                <p class="text-sm text-gray-500 mb-3">
+                    {{ $revText }}
+                </p>
+
+                {{-- Points pill --}}
+                <div
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 mb-6">
+                    <svg class="w-4 h-4 text-[#8f6a10]" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2" />
+                    </svg>
+                    <span class="text-sm font-black text-[#8f6a10]">
+                        +{{ $revPts }} pts
+                    </span>
+                </div>
+
+                <div class="flex gap-3">
+                    {{-- 你可以换成你自己的 route --}}
+                    <a href="{{ route('account.reviews.index') }}"
+                        class="flex-1 py-3 rounded-full bg-[#D4AF37] text-white font-bold">
+                        View Reviews
+                    </a>
+
+                    <button type="button" onclick="closeReviewSuccess()"
+                        class="flex-1 py-3 rounded-full border border-gray-200 text-gray-600 font-bold">
+                        Continue
+                    </button>
+                </div>
+
+                {{-- 右上角关闭 --}}
+                <button type="button" onclick="closeReviewSuccess()"
+                    class="absolute top-3 right-3 w-10 h-10 rounded-full hover:bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-700">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+        <script>
+            function closeReviewSuccess() {
+                document.getElementById('reviewSuccessOverlay')?.remove();
+            }
+
+            // 自动关闭（可调）
+            setTimeout(closeReviewSuccess, 3000);
+        </script>
+
+        <style>
+            @keyframes fadeInUp_ {
+                from {
+                    opacity: 0;
+                    transform: translateY(12px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+        </style>
+    @endif
 
 
     @if (session('error'))

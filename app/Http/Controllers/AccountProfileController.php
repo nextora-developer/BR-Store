@@ -61,6 +61,23 @@ class AccountProfileController extends Controller
             ->with('success', 'Profile update successfully.');
     }
 
+    public function rules(): array
+    {
+        $user = $this->user();
+
+        return [
+            'name'       => $user->name ? ['sometimes'] : ['required', 'string', 'max:255'],
+            'email'      => $user->email ? ['sometimes'] : ['required', 'string', 'lowercase', 'email', 'max:255'],
+            'phone'      => $user->phone ? ['sometimes'] : ['nullable', 'string', 'max:30'],
+
+            'ic_number'  => $user->ic_number ? ['sometimes'] : ['nullable', 'string', 'max:30'],
+            'birth_date' => $user->birth_date ? ['sometimes'] : ['nullable', 'date'],
+
+            'ic_image'   => ['nullable', 'image', 'max:2048'],
+        ];
+    }
+
+
 
     public function destroy(Request $request): RedirectResponse
     {

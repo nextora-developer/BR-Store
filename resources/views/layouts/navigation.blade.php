@@ -547,6 +547,20 @@
                             <span class="w-2 h-2 border-r-2 border-b-2 border-white/40 rotate-[-45deg]"></span>
                         </a>
 
+                        <a href="{{ route('account.reviews.index') }}"
+                            class="flex items-center justify-between px-5 py-4 text-sm font-bold text-white border-b border-white/10 active:bg-white/5 transition">
+                            <div class="flex items-center gap-3">
+                                <svg class="h-5 w-5 text-[#D4AF37]" xmlns="http://www.w3.org/2000/svg" fill="none"
+                                    viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
+                                </svg>
+                                <span>Reviews</span>
+                            </div>
+
+                            <span class="w-2 h-2 border-r-2 border-b-2 border-white/40 rotate-[-45deg]"></span>
+                        </a>
+
                         <a href="{{ route('account.profile.edit') }}"
                             class="flex items-center justify-between px-5 py-4 text-sm font-bold text-white active:bg-white/5 transition">
                             <div class="flex items-center gap-3">
@@ -554,21 +568,21 @@
                                     stroke-width="1.5" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0
-                                                                                                           a1.724 1.724 0 002.573 1.066
-                                                                                                           c1.543-.94 3.31.826 2.37 2.37
-                                                                                                           a1.724 1.724 0 001.065 2.572
-                                                                                                           c1.756.426 1.756 2.924 0 3.35
-                                                                                                           a1.724 1.724 0 00-1.066 2.573
-                                                                                                           c.94 1.543-.826 3.31-2.37 2.37
-                                                                                                           a1.724 1.724 0 00-2.572 1.065
-                                                                                                           c-.426 1.756-2.924 1.756-3.35 0
-                                                                                                           a1.724 1.724 0 00-2.573-1.066
-                                                                                                           c-1.543.94-3.31-.826-2.37-2.37
-                                                                                                           a1.724 1.724 0 00-1.065-2.572
-                                                                                                           c-1.756-.426-1.756-2.924 0-3.35
-                                                                                                           a1.724 1.724 0 001.066-2.573
-                                                                                                           c-.94-1.543.826-3.31 2.37-2.37
-                                                                                                           a1.724 1.724 0 002.572-1.065z" />
+                                                                                                                       a1.724 1.724 0 002.573 1.066
+                                                                                                                       c1.543-.94 3.31.826 2.37 2.37
+                                                                                                                       a1.724 1.724 0 001.065 2.572
+                                                                                                                       c1.756.426 1.756 2.924 0 3.35
+                                                                                                                       a1.724 1.724 0 00-1.066 2.573
+                                                                                                                       c.94 1.543-.826 3.31-2.37 2.37
+                                                                                                                       a1.724 1.724 0 00-2.572 1.065
+                                                                                                                       c-.426 1.756-2.924 1.756-3.35 0
+                                                                                                                       a1.724 1.724 0 00-2.573-1.066
+                                                                                                                       c-1.543.94-3.31-.826-2.37-2.37
+                                                                                                                       a1.724 1.724 0 00-1.065-2.572
+                                                                                                                       c-1.756-.426-1.756-2.924 0-3.35
+                                                                                                                       a1.724 1.724 0 001.066-2.573
+                                                                                                                       c-.94-1.543.826-3.31 2.37-2.37
+                                                                                                                       a1.724 1.724 0 002.572-1.065z" />
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>
@@ -577,6 +591,7 @@
 
                             <span class="w-2 h-2 border-r-2 border-b-2 border-white/40 rotate-[-45deg]"></span>
                         </a>
+
                     </div>
                 @endauth
 

@@ -105,7 +105,7 @@
                                         <span class="text-[10px] font-black uppercase tracking-widest">Est. Cash
                                             Value</span>
                                         <span
-                                            class="text-sm font-bold text-white">RM{{ number_format(($stats['points'] ?? 0) / 100, 2) }}</span>
+                                            class="text-lg font-bold text-white">RM{{ number_format(($stats['points'] ?? 0) / 100, 2) }}</span>
                                     </div>
                                     <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                                         <div
@@ -125,10 +125,7 @@
                                 Points History
                             </h2>
                             <div
-                                class="px-3 py-1 rounded-lg
-           text-[10px] font-bold uppercase tracking-widest
-           bg-gradient-to-r from-[#F9F4E5] to-white
-           border border-[#D4AF37]/20 text-[#8f6a10]">
+                                class="px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-widest bg-gradient-to-r from-[#F9F4E5] to-white border border-[#D4AF37]/20 text-[#8f6a10]">
                                 100 pts = RM 1
                             </div>
 
@@ -218,6 +215,10 @@
                                 </table>
                             </div>
                         </div>
+                        <div class="mt-4">
+                            {{ $pointTransactions->links() }}
+                        </div>
+
                     </section>
 
                     {{-- 3. Recent Orders Section --}}

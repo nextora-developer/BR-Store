@@ -76,11 +76,12 @@
                 {{ __('Name') }}
             </label>
 
-            <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}" required
-                autocomplete="name" @disabled($lockName)
+            <input id="name" name="name" type="text" value="{{ old('name', $user->name) }}"
+                {{ $lockName ? 'readonly' : '' }}
                 class="w-full rounded-xl border-gray-200 text-base px-3 py-3
            focus:border-[#D4AF37] focus:ring-[#D4AF37]/30
-           disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed" />
+           {{ $lockName ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}" />
+
 
 
             @error('name')
@@ -121,10 +122,11 @@
 
             <input id="birth_date" name="birth_date" type="date"
                 value="{{ old('birth_date', optional($user->birth_date)->format('Y-m-d')) }}"
-                @disabled($lockBirthDate)
+                {{ $lockBirthDate ? 'readonly' : '' }}
                 class="w-full rounded-xl border-gray-200 text-base px-3 py-3
            focus:border-[#D4AF37] focus:ring-[#D4AF37]/30
-           disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed" />
+           {{ $lockBirthDate ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}" />
+
 
             @error('birth_date')
                 <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
@@ -160,11 +162,12 @@
                 {{ __('Email') }}
             </label>
 
-            <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}" required
-                autocomplete="username" placeholder="Enter your email address" @disabled($lockEmail)
+            <input id="email" name="email" type="email" value="{{ old('email', $user->email) }}"
+                {{ $lockEmail ? 'readonly' : '' }}
                 class="w-full rounded-xl border-gray-200 text-base px-3 py-3
            focus:border-[#D4AF37] focus:ring-[#D4AF37]/30
-           disabled:bg-gray-100 disabled:text-gray-500 disabled:cursor-not-allowed" />
+           {{ $lockEmail ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : '' }}" />
+
 
 
             @error('email')
