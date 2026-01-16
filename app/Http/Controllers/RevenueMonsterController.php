@@ -71,13 +71,13 @@ class RevenueMonsterController extends Controller
                 ->with('error', 'This order is not payable.');
         }
 
-        $amountCents = (int) round(((float) $order->grand_total) * 100);
+        $amountCents = (int) round(((float) $order->total) * 100);
         $rmOrderId   = Str::padLeft((string) $order->id, 24, '0');
 
         // 🔍 金额诊断（你之前出现过 0）
         Log::info('RM amount debug', [
-            'grand_total_raw'   => $order->grand_total,
-            'grand_total_float' => (float) $order->grand_total,
+            'grand_total_raw'   => $order->total,
+            'grand_total_float' => (float) $order->total,
             'amount_cents'      => $amountCents,
         ]);
 
@@ -131,9 +131,11 @@ class RevenueMonsterController extends Controller
         $nonceStr  = Str::random(32);
         $timestamp = (string) time();
         $signType  = 'sha256';
+        $requestPath = '/v3/payment/online';
 
         Log::info('RM signing request', [
             'endpoint'    => $endpoint,
+            'request_path' => $requestPath,
             'nonce_len'   => strlen($nonceStr),
             'timestamp'   => $timestamp,
             'sign_type'   => $signType,
@@ -146,7 +148,7 @@ class RevenueMonsterController extends Controller
             nonceStr: $nonceStr,
             timestamp: $timestamp,
             signType: $signType,
-            requestUrl: $endpoint
+            requestUrl: $requestPath
         );
 
         Log::info('RM signature generated', [
@@ -266,7 +268,7 @@ class RevenueMonsterController extends Controller
         // ✅ 4) 状态与金额
         $status = strtoupper((string) (data_get($payload, 'data.status') ?? data_get($payload, 'status')));
         $finalAmount = (int) (data_get($payload, 'data.finalAmount') ?? 0); // cents
-        $expected = (int) round(((float) $order->grand_total) * 100);
+        $expected = (int) round(((float) $order->total) * 100);
 
         if ($finalAmount && $finalAmount !== $expected) {
             Log::warning('RM finalAmount mismatch', [
@@ -336,11 +338,23 @@ class RevenueMonsterController extends Controller
         string $nonceStr,
         string $timestamp,
         string $signType,
-        string $requestUrl
+        string $requestUrl // ✅ 这里请传 PATH，例如 /v3/payment/online
     ): string {
         $sorted  = $this->ksortRecursive($payload);
+
+        // ✅ JSON 必须稳定（不要 pretty、不要多余空格）
         $compact = json_encode($sorted, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        if ($compact === false) {
+            throw new \RuntimeException('RM json_encode failed.');
+        }
+
         $dataB64 = base64_encode($compact);
+
+        // ✅ requestUrl 必须是 path（保险：如果传进来是 full url，也自动取 path）
+        if (str_starts_with($requestUrl, 'http')) {
+            $parsed = parse_url($requestUrl);
+            $requestUrl = $parsed['path'] ?? $requestUrl;
+        }
 
         $plain = 'data=' . $dataB64
             . '&method=' . strtolower($method)
@@ -349,29 +363,38 @@ class RevenueMonsterController extends Controller
             . '&timestamp=' . $timestamp
             . '&requestUrl=' . $requestUrl;
 
-        $privateKey = config('services.rm.private_key');
+        $priv = $this->loadPrivateKeyForRm(); // ✅ 用下面给你的 loader
 
-        $privateKey = str_replace(["\r\n", "\r"], "\n", $privateKey);
-        $privateKey = str_replace("\\n", "\n", $privateKey);
-        $privateKey = trim($privateKey);
+        $signature = '';
+        $ok = openssl_sign($plain, $signature, $priv, OPENSSL_ALGO_SHA256);
 
-        $privKeyRes = openssl_pkey_get_private($privateKey);
-
-        if ($privKeyRes === false) {
-            while ($m = openssl_error_string()) {
-                Log::error('OpenSSL: ' . $m);
-            }
-            throw new \RuntimeException('RM private key invalid.');
-        }
-
-        $signature = null;
-        $ok = openssl_sign($plain, $signature, $privKeyRes, OPENSSL_ALGO_SHA256);
-
-        if (!$ok || !$signature) {
+        if (!$ok || $signature === '') {
             throw new \RuntimeException('RM openssl_sign failed.');
         }
 
         return base64_encode($signature);
+    }
+
+
+    private function loadPrivateKeyForRm(): \OpenSSLAsymmetricKey
+    {
+        $k = (string) config('services.rm.private_key');
+        if ($k === '') {
+            throw new \RuntimeException('RM private key missing.');
+        }
+
+        $k = str_replace(["\r\n", "\r"], "\n", $k);
+        $k = str_replace("\\n", "\n", $k);
+        $k = trim($k, " \t\n\r\0\x0B\"'");
+
+        $res = openssl_pkey_get_private($k);
+        if ($res !== false) return $res;
+
+        while ($m = openssl_error_string()) {
+            Log::error('OpenSSL: ' . $m);
+        }
+
+        throw new \RuntimeException('RM private key invalid.');
     }
 
     /**
