@@ -355,15 +355,16 @@ class CheckoutController extends Controller
 
 
         // 7️⃣ 发邮件
-        $isHitpay = $paymentMethod->code === 'hitpay';
+        $isRM = $paymentMethod->code === 'revenue_monster';
 
         if ($order) {
             Log::info('Checkout order created: ' . $order->order_no);
             Log::info('Config admin_address is: ' . (config('mail.admin_address') ?? 'NULL'));
 
-            if (! $isHitpay) {
+            // ❌ Revenue Monster：不在这里发邮件（等 webhook）
+            if (! $isRM) {
 
-                // ✅ Customer mail 独立
+                // ✅ Customer mail
                 if ($order->customer_email) {
                     try {
                         Log::info('Sending customer email for order: ' . $order->order_no . ' -> ' . $order->customer_email);
@@ -374,7 +375,7 @@ class CheckoutController extends Controller
                     }
                 }
 
-                // ✅ Admin mail 独立
+                // ✅ Admin mail
                 $admin = config('mail.admin_address');
                 if ($admin) {
                     try {
@@ -391,10 +392,10 @@ class CheckoutController extends Controller
         }
 
         /**
-         * 8️⃣ HitPay 付款方式：下单完成后直接跳 HitPay
+         * 8️⃣ Revenue Monster 付款方式：下单完成后直接跳 RM
          */
-        if ($isHitpay) {
-            return redirect()->route('hitpay.pay', $order);
+        if ($isRM) {
+            return redirect()->route('pay.rm', $order);
         }
 
 

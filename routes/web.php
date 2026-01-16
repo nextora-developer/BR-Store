@@ -35,6 +35,7 @@ use App\Http\Controllers\AccountReviewController;
 use App\Http\Controllers\AccountOrderInvoiceController;
 
 use App\Http\Controllers\HitpayController;
+use App\Http\Controllers\RevenueMonsterController;
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
@@ -274,10 +275,21 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
 |--------------------------------------------------------------------------
 */
 
-Route::get('/pay/hitpay/{order}', [HitpayController::class, 'createPayment'])
-    ->name('hitpay.pay');
+// Route::get('/pay/hitpay/{order}', [HitpayController::class, 'createPayment'])
+//     ->name('hitpay.pay');
 
-Route::get('/payment/hitpay/return', [HitpayController::class, 'handleReturn'])
-    ->name('hitpay.return');
+// Route::get('/payment/hitpay/return', [HitpayController::class, 'handleReturn'])
+//     ->name('hitpay.return');
+
+/*
+|--------------------------------------------------------------------------
+| Revenue Monster Payment Routes
+|--------------------------------------------------------------------------
+*/
+Route::post('/pay/rm/{order}', [RevenueMonsterController::class, 'pay'])
+    ->name('pay.rm');
+
+Route::get('/payment/rm/return', [RevenueMonsterController::class, 'handleReturn'])
+    ->name('payment.rm.return');
 
 require __DIR__ . '/auth.php';

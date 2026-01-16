@@ -44,10 +44,27 @@ return [
     'hitpay' => [
         'url'          => env('HITPAY_API_URL'),
         'api_key'      => env('HITPAY_API_KEY'),
-        'salt'         => env('HITPAY_SALT'),          
-        'webhook_salt' => env('HITPAY_WEBHOOK_SALT'), 
-        'currency' => env('HITPAY_CURRENCY'),  
+        'salt'         => env('HITPAY_SALT'),
+        'webhook_salt' => env('HITPAY_WEBHOOK_SALT'),
+        'currency' => env('HITPAY_CURRENCY'),
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Revenue Monster Payment Gateway 
+    |--------------------------------------------------------------------------
+    */
+
+    'rm' => [
+        'api_base'     => env('RM_API_BASE'),
+        'store_id'     => env('RM_STORE_ID'),
+        'api_key'      => env('RM_API_KEY'),
+        'private_key'  => env('RM_PRIVATE_KEY'),
+        'public_key'   => env('RM_PUBLIC_KEY'),
+        'return_url'   => env('RM_RETURN_URL'),
+        'webhook_url'  => env('RM_WEBHOOK_URL'),
+    ],
+
 
 
 ];
