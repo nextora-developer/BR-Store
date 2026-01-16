@@ -17,7 +17,7 @@ class RevenueMonsterController extends Controller
      * 创建 Hosted Payment Checkout (v3/payment/online)
      * POST https://(sb-)open.revenuemonster.my/v3/payment/online
      */
-    public function pay(Request $request, Order $order)
+    public function pay(Order $order)
     {
         abort_unless(auth()->check(), 403);
         if (!empty($order->user_id)) {
@@ -126,7 +126,7 @@ class RevenueMonsterController extends Controller
     public function handleWebhook(Request $request)
     {
         Log::info('RM webhook headers', $request->headers->all());
-        
+
         $raw     = $request->getContent();
         $headers = $request->headers->all();
         $payload = $request->all();

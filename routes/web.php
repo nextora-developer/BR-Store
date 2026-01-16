@@ -286,7 +286,7 @@ Route::prefix('admin')->middleware(['auth', 'admin'])->name('admin.')->group(fun
 | Revenue Monster Payment Routes
 |--------------------------------------------------------------------------
 */
-Route::post('/pay/rm/{order}', [RevenueMonsterController::class, 'pay'])
+Route::get('/pay/rm/{order}', [RevenueMonsterController::class, 'pay'])
     ->name('pay.rm');
 
 Route::get('/payment/rm/return', [RevenueMonsterController::class, 'handleReturn'])
