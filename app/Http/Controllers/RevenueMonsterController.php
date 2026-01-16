@@ -251,13 +251,24 @@ class RevenueMonsterController extends Controller
             . '&timestamp=' . $timestamp
             . '&requestUrl=' . $requestUrl;
 
-        $privateKey = config('services.rm.private_key');
+        $privateKey = (string) config('services.rm.private_key');
         if (!$privateKey) {
             throw new \RuntimeException('RM private key missing (RM_PRIVATE_KEY).');
         }
 
+        // ✅ 把 .env 的 \n 变回真正换行
+        $privateKey = str_replace(["\\n", "\r\n", "\r"], "\n", $privateKey);
+        $privateKey = trim($privateKey);
+
+        // ✅ 转成 OpenSSL key resource/object
+        $privKeyRes = openssl_pkey_get_private($privateKey);
+        if ($privKeyRes === false) {
+            throw new \RuntimeException('RM private key invalid / cannot be loaded by OpenSSL.');
+        }
+
         $signature = null;
-        $ok = openssl_sign($plain, $signature, $privateKey, OPENSSL_ALGO_SHA256);
+        $ok = openssl_sign($plain, $signature, $privKeyRes, OPENSSL_ALGO_SHA256);
+
         if (!$ok || !$signature) {
             throw new \RuntimeException('RM openssl_sign failed.');
         }
