@@ -15,7 +15,7 @@ class PaymentMethodSeeder extends Seeder
         PaymentMethod::updateOrCreate(
             ['code' => 'online_transfer'],
             [
-                'name'                => 'Online Transfer / Bank Transfer',
+                'name'                => 'Direct Payment',
                 'short_description'   => 'Transfer to our company bank account & upload receipt',
                 'is_active'           => true,
                 'is_default'          => true,
@@ -35,7 +35,7 @@ class PaymentMethodSeeder extends Seeder
         PaymentMethod::updateOrCreate(
             ['code' => 'revenue_monster'],
             [
-                'name'              => 'Online Payment (E-Wallet / Cards)',
+                'name'              => 'Online Payment',
                 'short_description' => 'Pay securely via Touch ’n Go, GrabPay, ShopeePay, FPX & more',
                 'is_active'         => true,
                 'is_default'        => false,

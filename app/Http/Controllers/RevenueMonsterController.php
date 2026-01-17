@@ -371,6 +371,34 @@ class RevenueMonsterController extends Controller
             return response()->json(['ok' => true]);
         }
 
+        // ✅ Extract important RM fields (Notify payload spec)
+        $rmStatus        = strtoupper((string) data_get($payload, 'data.status', ''));
+        $rmTransactionId = (string) data_get($payload, 'data.transactionId', '');
+        $rmReferenceId   = (string) data_get($payload, 'data.referenceId', '');
+        $rmFinalAmount   = (int) data_get($payload, 'data.finalAmount', 0); // cents
+        $rmCurrency      = (string) data_get($payload, 'data.currencyType', '');
+        $rmTransactionAt = data_get($payload, 'data.transactionAt'); // RFC3339, only when SUCCESS
+
+        // ✅ Idempotent by transactionId (avoid duplicated callbacks)
+        if ($rmTransactionId && Order::where('rm_transaction_id', $rmTransactionId)->where('id', '!=', $order->id)->exists()) {
+            Log::warning('RM webhook duplicate transactionId', ['transactionId' => $rmTransactionId]);
+            return response()->json(['ok' => true]);
+        }
+
+        // ✅ Save RM info into order
+        $order->forceFill([
+            'rm_status'         => $rmStatus ?: null,
+            'rm_transaction_id' => $rmTransactionId ?: null,
+            'rm_reference_id'   => $rmReferenceId ?: null,
+            'rm_final_amount'   => $rmFinalAmount > 0 ? $rmFinalAmount : null,
+            'rm_currency'       => $rmCurrency ?: null,
+            'rm_transaction_at' => $rmTransactionAt ? \Carbon\Carbon::parse($rmTransactionAt) : null,
+
+            // optional
+            'rm_raw_payload'    => $payload,
+        ])->save();
+
+
         // ✅ 4) Status & amount validation
         $status      = strtoupper((string) (data_get($payload, 'data.status') ?? data_get($payload, 'status') ?? ''));
         $finalAmount = (int) (data_get($payload, 'data.finalAmount') ?? data_get($payload, 'finalAmount') ?? 0); // cents
@@ -386,7 +414,7 @@ class RevenueMonsterController extends Controller
             return response()->json(['ok' => true]);
         }
 
-        $success = ['SUCCESS', 'PAID', 'COMPLETED'];
+        $success = ['SUCCESS'];
         $failed  = ['FAILED', 'CANCELLED', 'EXPIRED'];
 
         if (in_array($status, $success, true)) {

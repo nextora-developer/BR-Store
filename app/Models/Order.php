@@ -51,6 +51,14 @@ class Order extends Model
 
         'points_redeem',
         'points_discount',
+
+        'rm_status',
+        'rm_transaction_id',
+        'rm_reference_id',
+        'rm_final_amount',
+        'rm_currency',
+        'rm_transaction_at',
+        'rm_raw_payload',
     ];
 
     protected $casts = [
