@@ -77,14 +77,58 @@
                         Excellence in every detail, delivered with care.
                     </p>
 
-                    {{-- Small brand badge --}}
-                    <div class="mt-6">
+                    <div class="mt-6 space-y-3">
                         <span
-                            class="inline-flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest
-                               text-[#D4AF37] bg-white/5 border border-white/10 px-3 py-1 rounded-full">
-                            Malaysia • Crafted with care
+                            class="inline-flex mb-1 items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-[#D4AF37] bg-white/5 border border-white/10 px-2 py-1 rounded-full">
+                            Secure Payment
                         </span>
+
+                        {{-- Payment Methods --}}
+                        <div class="flex items-center gap-4 flex-wrap">
+                            <img src="/images/payments/fpx.png" alt="FPX"
+                                class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                            <img src="/images/payments/visa.png" alt="Visa"
+                                class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                            <img src="/images/payments/mastercard.png" alt="Mastercard"
+                                class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                            <img src="/images/payments/tng.png" alt="TNG"
+                                class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                            <img src="/images/payments/grabpay.png" alt="GRABPAY"
+                                class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                            <img src="/images/payments/grabpaylater.png" alt="GRABPAYLATER"
+                                class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                            <img src="/images/payments/boost.png" alt="BOOST"
+                                class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                            <img src="/images/payments/boostpaylater.png" alt="BOOSTPAYLATER"
+                                class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                            <img src="/images/payments/shopeepay.png" alt="SHOPEEPAY"
+                                class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                            <img src="/images/payments/spaylater.png" alt="SPAYLATER"
+                                class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                            <img src="/images/payments/alipay.png" alt="ALIPAY"
+                                class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                            <img src="/images/payments/wechatpay.png" alt="WECHATPAY"
+                                class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                            <img src="/images/payments/mae.png" alt="MAE"
+                                class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+
+                            <img src="/images/payments/mcash.png" alt="MCASH"
+                                class="h-6 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
+                        </div>
                     </div>
+
                 </div>
 
                 {{-- Explore --}}
@@ -246,28 +290,10 @@
 
             {{-- Bottom Bar --}}
             <div
-                class="mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-sm text-gray-400 font-medium">
+                class="mt-10 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-center items-center gap-4">
+                <p class="text-base text-gray-400 font-medium">
                     © {{ date('Y') }} BR Innovate Future. All rights reserved.
                 </p>
-
-
-                <div class="flex items-center gap-4">
-                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                        Secure Payments
-                    </span>
-
-                    <div class="flex items-center gap-4">
-                        <img src="/images/payments/fpx.png" alt="FPX"
-                            class="h-5 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
-
-                        <img src="/images/payments/visa.png" alt="Visa"
-                            class="h-5 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
-
-                        <img src="/images/payments/mastercard.png" alt="Mastercard"
-                            class="h-5 opacity-70 grayscale hover:opacity-100 hover:grayscale-0 transition" />
-                    </div>
-                </div>
             </div>
 
         </div>
@@ -281,8 +307,8 @@
            flex items-center justify-center
            shadow-lg shadow-[#D4AF37]/40
            hover:bg-[#c49a2f] transition-all duration-300">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
-            stroke-width="2">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
         </svg>
     </button>
