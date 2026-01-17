@@ -386,35 +386,21 @@ class RevenueMonsterController extends Controller
             throw new \RuntimeException('RM public key missing.');
         }
 
-        /**
-         * ✅ 核心修复点（你要的就是这里）
-         * 1. 把字面量 "\n" 变成真正换行
-         * 2. 统一换行格式
-         * 3. 清掉 BEGIN/END 行后面被污染的 \n / 空格
-         */
-        $k = str_replace("\\n", "\n", $k);
+        // 统一换行 / 处理 env 里的 \n
         $k = str_replace(["\r\n", "\r"], "\n", $k);
-
-        // 去掉每一行前后的多余空白（防止 env 缩进）
-        $k = preg_replace('/^[ \t]+/m', '', $k);
-        $k = preg_replace('/[ \t]+$/m', '', $k);
-
-        // 最终整体 trim
+        $k = str_replace("\\n", "\n", $k);
         $k = trim($k, " \t\n\r\0\x0B\"'");
 
+        // ✅ 必须转成 OpenSSL key resource
         $res = openssl_pkey_get_public($k);
-        if ($res !== false) {
-            return $res;
-        }
+        if ($res !== false) return $res;
 
-        // 打 OpenSSL 错误方便你看
         while ($m = openssl_error_string()) {
             Log::error('OpenSSL(pub): ' . $m);
         }
 
         throw new \RuntimeException('RM public key invalid.');
     }
-
 
 
     private function sendOrderEmailsSafely(Order $order): void
