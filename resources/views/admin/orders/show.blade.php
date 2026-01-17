@@ -59,28 +59,7 @@
                 </svg>
                 Invoice PDF
             </a>
-
-            {{-- Show HitPay Dashboard Button only if payment is HitPay --}}
-            @if ($order->gateway === 'hitpay' || str_contains(strtolower($order->payment_method_name ?? ''), 'hitpay'))
-                <a href="https://dashboard.hit-pay.com/payments/{{ $order->payment_reference }}" target="_blank"
-                    class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0F172A] text-white
-                   text-sm font-bold hover:bg-black transition-all shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                        stroke="currentColor" class="w-4 h-4">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5
-                                                         c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639
-                                                         C20.577 16.49 16.64 19.5 12 19.5
-                                                         c-4.638 0-8.573-3.007-9.963-7.178z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-
-                    View in HitPay
-                </a>
-            @endif
         </div>
-
-
-
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -435,7 +414,27 @@
             {{-- Payment Metadata --}}
             <div class="bg-gray-50 border border-gray-200 rounded-2xl p-6">
                 <h3 class="text-base font-bold tracking-widest text-black-400">Payment</h3>
-                <p class="text-sm text-gray-400 mb-6">No display transaction id mean failed.</p>
+
+                @php
+                    $code = $order->payment_method_code ?? ($order->payment_method ?? '');
+                    $isRM = in_array($code, ['rm', 'revenue_monster', 'revenuemonster', 'rm_online'], true);
+
+                    $rmHasTxn = !empty($order->rm_transaction_id);
+                    $rmStatus = strtoupper((string) ($order->rm_status ?? ''));
+                    $rmSuccess = $rmStatus === 'SUCCESS';
+                    $rmFailed = in_array($rmStatus, ['FAILED', 'CANCELLED', 'EXPIRED'], true);
+                @endphp
+
+                {{-- 提示文字 --}}
+                @if ($isRM)
+                    <p class="text-sm text-gray-400 mb-6">
+                        No RM transaction ID means payment not completed / not notified yet.
+                    </p>
+                @else
+                    <p class="text-sm text-gray-400 mb-6">
+                        Direct payment requires receipt proof upload.
+                    </p>
+                @endif
 
                 <div class="space-y-5">
                     {{-- Payment Method --}}
@@ -446,35 +445,64 @@
                         </span>
                     </div>
 
-                    {{-- Payment Result (HitPay Webhook) --}}
+                    {{-- Gateway / Payment Status --}}
                     <div class="flex justify-between">
-                        <span class="text-sm text-gray-500 font-medium">Status (Gateway):</span>
+                        <span class="text-sm text-gray-500 font-medium">Status:</span>
 
-                        <span
-                            class="text-sm font-bold
-                                @if ($order->payment_status === 'completed') text-green-700
-                                @elseif ($order->payment_status === 'failed') text-red-600
-                                @else text-gray-900 @endif">
-                            {{ ucfirst($order->payment_status ?? '—') }}
-                        </span>
+                        @if ($isRM)
+                            <span
+                                class="text-sm font-bold
+                        @if ($rmSuccess) text-green-700
+                        @elseif ($rmFailed) text-red-600
+                        @else text-gray-900 @endif">
+                                {{ $rmStatus ?: '—' }}
+                            </span>
+                        @else
+                            {{-- Direct Payment：你可以用订单状态来显示，比如 pending/paid/failed --}}
+                            @php $manualStatus = strtoupper((string) ($order->status ?? '')); @endphp
+                            <span class="text-sm font-bold text-gray-900">
+                                {{ $manualStatus ?: '—' }}
+                            </span>
+                        @endif
                     </div>
 
-                    {{-- Transaction ID (Copyable) --}}
-                    @if ($order->payment_reference)
-                        <div class="flex justify-between">
-                            <span class="text-sm text-gray-500 font-medium">Transaction ID:</span>
+                    {{-- RM Details --}}
+                    @if ($isRM)
+                        @if ($rmHasTxn)
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-500 font-medium">Transaction ID:</span>
+                                <button onclick="navigator.clipboard.writeText('{{ $order->rm_transaction_id }}')"
+                                    class="text-sm font-bold text-blue-600 hover:underline">
+                                    {{ $order->rm_transaction_id }}
+                                </button>
+                            </div>
+                        @endif
 
-                            <button onclick="navigator.clipboard.writeText('{{ $order->payment_reference }}')"
-                                class="text-sm font-bold text-blue-600 hover:underline">
-                                {{ $order->payment_reference }}
-                            </button>
+                        @if (!empty($order->rm_reference_id))
+                            <div class="flex justify-between">
+                                <span class="text-sm text-gray-500 font-medium">Reference ID:</span>
+                                <button onclick="navigator.clipboard.writeText('{{ $order->rm_reference_id }}')"
+                                    class="text-sm font-bold text-blue-600 hover:underline">
+                                    {{ $order->rm_reference_id }}
+                                </button>
+                            </div>
+                        @endif
+
+                        <div class="flex justify-between">
+                            <span class="text-sm text-gray-500 font-medium">Transaction At:</span>
+                            <span class="text-sm font-bold text-gray-900">
+                                {{ $order->rm_transaction_at ? $order->rm_transaction_at->format('Y-m-d H:i:s') : '—' }}
+                            </span>
                         </div>
                     @endif
 
+                    {{-- ✅ Receipt: Direct Payment 必须看（RM 有上传也照样显示） --}}
                     @if ($order->payment_receipt_path)
                         <div class="pt-4 border-t border-gray-200">
-                            <label class="text-xs font-bold uppercase tracking-widest text-gray-400 block mb-3">Transaction
-                                Proof</label>
+                            <label class="text-xs font-bold uppercase tracking-widest text-gray-400 block mb-3">
+                                Transaction Proof
+                            </label>
+
                             <div class="flex flex-col gap-2">
                                 <button onclick="document.getElementById('receiptModal').showModal()"
                                     class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white border border-gray-300 text-sm font-bold text-gray-700 hover:bg-gray-50 transition shadow-sm">
@@ -487,15 +515,14 @@
                                     </svg>
                                     View Receipt
                                 </button>
+
                                 <a href="{{ asset('storage/' . $order->payment_receipt_path) }}" download
                                     class="flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-[#D4AF37]/10 border border-[#D4AF37]/30 text-sm font-bold text-[#8f6a10] hover:bg-[#D4AF37]/20 transition">
-
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
                                         stroke-width="2" stroke="currentColor" class="w-4 h-4">
                                         <path stroke-linecap="round" stroke-linejoin="round"
                                             d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M12 3v12m0 0l3.75-3.75M12 15L8.25 11.25" />
                                     </svg>
-
                                     Download Proof
                                 </a>
                             </div>

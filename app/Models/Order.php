@@ -65,6 +65,8 @@ class Order extends Model
         'shipped_at' => 'datetime',
         'points_redeem'   => 'integer',
         'points_discount' => 'decimal:2',
+        'rm_transaction_at' => 'datetime',
+        'rm_raw_payload' => 'array',
     ];
 
     public function items(): HasMany
