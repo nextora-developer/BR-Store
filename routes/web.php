@@ -85,7 +85,9 @@ if (app()->environment('local')) {
 
 Route::get('/guideline', [PageController::class, 'guideline'])->name('guideline');
 Route::get('/faq', [PageController::class, 'faq'])->name('faq');
+Route::get('/reward-point', [PageController::class, 'rewardPoint'])->name('reward-point');
 Route::get('/vouchers', [VoucherPageController::class, 'index'])->name('vouchers.index');
+
 
 Route::get('/privacy-policy', [PageController::class, 'privacy'])->name('privacy');
 Route::get('/shipping-delivery', [PageController::class, 'shipping'])->name('shipping');

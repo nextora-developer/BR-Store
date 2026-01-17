@@ -95,7 +95,7 @@
                     <div class="h-px w-10 bg-white/15 mt-4 mb-6"></div>
 
                     <ul class="space-y-4">
-                        @foreach ([['label' => 'Official Site', 'route' => 'https://brif.cloud'], ['label' => 'Guideline', 'route' => route('guideline')], ['label' => 'Faq', 'route' => route('faq')], ['label' => 'Voucher', 'route' => route('vouchers.index')]] as $item)
+                        @foreach ([['label' => 'Official Site', 'route' => 'https://brif.cloud'], ['label' => 'Reward Point', 'route' => route('reward-point')], ['label' => 'Voucher', 'route' => route('vouchers.index')], ['label' => 'Guideline', 'route' => route('guideline')], ['label' => 'Faq', 'route' => route('faq')]] as $item)
                             <li>
                                 <a href="{{ $item['route'] }}"
                                     class="text-sm text-gray-300 hover:text-white transition relative inline-block
@@ -142,12 +142,12 @@
 
                     <ul class="space-y-4">
                         <li>
-                            <a href="{{ route('account.profile.edit') }}"
+                            <a href="{{ route('account.index') }}"
                                 class="text-sm text-gray-300 hover:text-white transition relative inline-block
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
-                                Profile Details
+                                Dashboard
                             </a>
                         </li>
                         <li>
@@ -156,7 +156,7 @@
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
-                                Order History
+                                My Orders
                             </a>
                         </li>
                         <li>
@@ -165,7 +165,7 @@
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
-                                Wishlist
+                                My Wishlist
                             </a>
                         </li>
                         <li>
@@ -174,7 +174,25 @@
                                   after:content-[''] after:absolute after:left-0 after:-bottom-1
                                   after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
                                   after:transition-all after:duration-300">
-                                Addresses
+                                Shipping Addresses
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('account.reviews.index') }}"
+                                class="text-sm text-gray-300 hover:text-white transition relative inline-block
+                                  after:content-[''] after:absolute after:left-0 after:-bottom-1
+                                  after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
+                                  after:transition-all after:duration-300">
+                                Reviews
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{ route('account.profile.edit') }}"
+                                class="text-sm text-gray-300 hover:text-white transition relative inline-block
+                                  after:content-[''] after:absolute after:left-0 after:-bottom-1
+                                  after:h-px after:w-0 after:bg-[#D4AF37] hover:after:w-full
+                                  after:transition-all after:duration-300">
+                                Profile Settings
                             </a>
                         </li>
                     </ul>
@@ -230,8 +248,9 @@
             <div
                 class="mt-14 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
                 <p class="text-sm text-gray-400 font-medium">
-                    © {{ date('Y') }} BR INNOVATE FUTURE. Built with pride in Malaysia.
+                    © {{ date('Y') }} BR Innovate Future. All rights reserved.
                 </p>
+
 
                 <div class="flex items-center gap-4">
                     <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
@@ -488,9 +507,9 @@
                 {{-- Points pill --}}
                 <div
                     class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/20 mb-6">
-                    
-                    <svg class="w-4 h-4 text-[#8f6a10]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                        stroke="currentColor">
+
+                    <svg class="w-4 h-4 text-[#8f6a10]" xmlns="http://www.w3.org/2000/svg" fill="none"
+                        viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                     </svg>

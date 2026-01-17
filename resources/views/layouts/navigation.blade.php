@@ -55,6 +55,14 @@
                             x-transition:enter-start="opacity-0 scale-95"
                             class="absolute left-0 mt-2 w-48 rounded-2xl border border-white/10 bg-black/95 backdrop-blur shadow-xl ring-1 ring-black/40 z-50 overflow-hidden">
                             <div class="p-1.5">
+                                <a href="{{ route('reward-point') }}"
+                                    class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#D4AF37] rounded-xl transition">
+                                    Reward Point
+                                </a>
+                                <a href="{{ route('vouchers.index') }}"
+                                    class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#D4AF37] rounded-xl transition">
+                                    Voucher
+                                </a>
                                 <a href="{{ route('guideline') }}"
                                     class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#D4AF37] rounded-xl transition">
                                     Guideline
@@ -62,10 +70,6 @@
                                 <a href="{{ route('faq') }}"
                                     class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#D4AF37] rounded-xl transition">
                                     FAQ
-                                </a>
-                                <a href="{{ route('vouchers.index') }}"
-                                    class="block px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-[#D4AF37] rounded-xl transition">
-                                    Voucher
                                 </a>
                             </div>
                         </div>
@@ -380,6 +384,14 @@
                                 'icon' =>
                                     'M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z',
                             ],
+
+                            [
+                                'route' => 'reward-point', // ← 换成你真实存在的 route
+                                'label' => 'Rewards',
+                                'icon' =>
+                                    'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.921-.755 1.688-1.54 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.784.57-1.838-.197-1.539-1.118l1.518-4.674a1 1 0 00-.363-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z',
+                            ],
+
                             [
                                 'route' => 'guideline',
                                 'label' => 'Help',
@@ -568,21 +580,21 @@
                                     stroke-width="1.5" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0
-                                                                                                                       a1.724 1.724 0 002.573 1.066
-                                                                                                                       c1.543-.94 3.31.826 2.37 2.37
-                                                                                                                       a1.724 1.724 0 001.065 2.572
-                                                                                                                       c1.756.426 1.756 2.924 0 3.35
-                                                                                                                       a1.724 1.724 0 00-1.066 2.573
-                                                                                                                       c.94 1.543-.826 3.31-2.37 2.37
-                                                                                                                       a1.724 1.724 0 00-2.572 1.065
-                                                                                                                       c-.426 1.756-2.924 1.756-3.35 0
-                                                                                                                       a1.724 1.724 0 00-2.573-1.066
-                                                                                                                       c-1.543.94-3.31-.826-2.37-2.37
-                                                                                                                       a1.724 1.724 0 00-1.065-2.572
-                                                                                                                       c-1.756-.426-1.756-2.924 0-3.35
-                                                                                                                       a1.724 1.724 0 001.066-2.573
-                                                                                                                       c-.94-1.543.826-3.31 2.37-2.37
-                                                                                                                       a1.724 1.724 0 002.572-1.065z" />
+                                                                                                                                   a1.724 1.724 0 002.573 1.066
+                                                                                                                                   c1.543-.94 3.31.826 2.37 2.37
+                                                                                                                                   a1.724 1.724 0 001.065 2.572
+                                                                                                                                   c1.756.426 1.756 2.924 0 3.35
+                                                                                                                                   a1.724 1.724 0 00-1.066 2.573
+                                                                                                                                   c.94 1.543-.826 3.31-2.37 2.37
+                                                                                                                                   a1.724 1.724 0 00-2.572 1.065
+                                                                                                                                   c-.426 1.756-2.924 1.756-3.35 0
+                                                                                                                                   a1.724 1.724 0 00-2.573-1.066
+                                                                                                                                   c-1.543.94-3.31-.826-2.37-2.37
+                                                                                                                                   a1.724 1.724 0 00-1.065-2.572
+                                                                                                                                   c-1.756-.426-1.756-2.924 0-3.35
+                                                                                                                                   a1.724 1.724 0 001.066-2.573
+                                                                                                                                   c-.94-1.543.826-3.31 2.37-2.37
+                                                                                                                                   a1.724 1.724 0 002.572-1.065z" />
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                 </svg>

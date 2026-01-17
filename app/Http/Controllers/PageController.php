@@ -21,6 +21,11 @@ class PageController extends Controller
         return view('pages.faq');
     }
 
+    public function rewardPoint()
+    {
+        return view('pages.reward-point');
+    }
+
     public function privacy()
     {
         return view('pages.privacy');
